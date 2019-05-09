@@ -13,7 +13,7 @@ import {
 import '../../css/TeComponent.css';
 
 const apiUrl = () => `${API_ROOT}/predict/textual-entailment`
-
+const attackapiUrl = () => `${API_ROOT}/attack/textual-entailment`
 const title = "Textual Entailment"
 
 const description = (
@@ -76,7 +76,7 @@ const judgments = {
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
 
-const Output = ({ responseData }) => {
+const Output = ({ responseData,requestData, attackData,attackModel}) => {
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
 
@@ -167,6 +167,37 @@ const Output = ({ responseData }) => {
     </div>
     <OutputField label=" Model internals">
       <Accordion accordion={false}>
+
+
+       <AccordionItem expanded={true}>
+          <AccordionItemTitle>
+            Pathologies Attack
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+            <p>
+              This attack reduces the inputs by removing the least important word at each iteration.
+              Beam search is used for better global optimial attack.
+            </p>
+            <p> {attackData}
+
+            </p>
+                <div className="form__field form__field--btn">
+                    <button
+                     id="input--mc-submit"
+                     type="button"
+                     className="btn btn--icon-disclosure"
+                     onClick={ () => attackModel(requestData) }>Attack
+                        <svg>
+                            <use xlinkHref="#icon__disclosure"></use>
+                        </svg>
+                    </button>
+                </div>
+
+          </AccordionItemBody>
+        </AccordionItem>
+
+
         <AccordionItem expanded={true}>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
@@ -222,6 +253,6 @@ const examples = [
   },
 ]
 
-const modelProps = {apiUrl, title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, attackapiUrl, title, description, descriptionEllipsed, fields, examples, Output}
 
 export default withRouter(props => <Model {...props} {...modelProps}/>)

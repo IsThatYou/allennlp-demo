@@ -38,7 +38,7 @@ MODELS = {
                 311108
         ),
         'naqanet-reading-comprehension': DemoModel(
-                'https://s3-us-west-2.amazonaws.com/allennlp/models/naqanet-2019.03.01.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/naqanet-2019.04.29-fixed-weight-names.tar.gz',
                 'machine-comprehension',
                 25819
         ),

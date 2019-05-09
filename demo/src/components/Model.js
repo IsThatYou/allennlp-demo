@@ -6,15 +6,17 @@ class Model extends React.Component {
     constructor(props) {
       super(props);
 
-      const { requestData, responseData } = props;
+      const { requestData, responseData, attackData } = props;
 
       this.state = {
         outputState: responseData ? "received" : "empty", // valid values: "working", "empty", "received", "error"
         requestData: requestData,
-        responseData: responseData
+        responseData: responseData,
+        attackData: attackData
       };
 
       this.runModel = this.runModel.bind(this)
+      this.attackModel = this.attackModel.bind(this)
     }
 
     runModel(inputs) {
@@ -36,7 +38,6 @@ class Model extends React.Component {
         // to the corresponding path using `history.push`.
         const { slug } = json;
         const newPath = slug ? `/${selectedModel}/${slug}` : `/${selectedModel}`
-
         // We'll pass the request and response data along as part of the location object
         // so that the `Demo` component can use them to re-render.
         const location = {
@@ -47,6 +48,24 @@ class Model extends React.Component {
       }).catch((error) => {
         this.setState({outputState: "error"});
         console.error(error);
+      });
+    }
+
+    attackModel(inputs) {
+      const { selectedModel, attackapiUrl } = this.props
+
+      fetch(attackapiUrl(inputs), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inputs)
+      }).then((response) => {
+        return response.json();
+      }).then((json) => {
+        console.log(json)
+        this.setState({attackData: json})
       });
     }
 
@@ -65,7 +84,7 @@ class Model extends React.Component {
                                      outputState={outputState}
                                      runModel={this.runModel}/>
 
-        const demoOutput = requestData && responseData ? <Output {...this.state}/> : null
+        const demoOutput = requestData && responseData ? <Output {...this.state} attackModel={this.attackModel}/> : null
 
         let className, InputPane, OutputPane
         if (vertical) {
