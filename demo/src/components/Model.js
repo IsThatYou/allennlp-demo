@@ -64,7 +64,7 @@ class Model extends React.Component {
       }).then((response) => {
         return response.json();
       }).then((json) => {
-        console.log(json)
+        //console.log(json)
         this.setState({attackData: json})
       });
     }
@@ -85,7 +85,6 @@ class Model extends React.Component {
                                      runModel={this.runModel}/>
 
         const demoOutput = requestData && responseData ? <Output {...this.state} attackModel={this.attackModel}/> : null
-
         let className, InputPane, OutputPane
         if (vertical) {
           className = "pane model"

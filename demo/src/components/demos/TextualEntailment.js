@@ -132,7 +132,14 @@ const Output = ({ responseData,requestData, attackData,attackModel}) => {
   const c = entailment;
   const x = 0.5 * (2 * b + c) / (a + b + c)
   const y = (c / (a + b + c))
-
+  var attack_visual = '';
+  if (attackData === undefined) {
+    attack_visual = "placeholder"
+  }
+  else{
+    attack_visual = attackData["final"].join(" ")
+  }
+  console.log("rua",attackData);
   return (
   <div className="model__content answer">
     <OutputField label="Summary">
@@ -179,7 +186,7 @@ const Output = ({ responseData,requestData, attackData,attackModel}) => {
               This attack reduces the inputs by removing the least important word at each iteration.
               Beam search is used for better global optimial attack.
             </p>
-            <p> {attackData}
+            <p> {attack_visual}
 
             </p>
                 <div className="form__field form__field--btn">
