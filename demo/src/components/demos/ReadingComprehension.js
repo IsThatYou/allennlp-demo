@@ -13,7 +13,7 @@ import { API_ROOT } from '../../api-config';
 import { truncateText } from '../DemoInput'
 
 const title = "Reading Comprehension"
-
+//const attackapiUrl = () => `${API_ROOT}/attack/machine-comprehension`
 const description = (
   <span>
     Reading comprehension is the task of answering questions about a passage of text to show that
@@ -78,6 +78,59 @@ const Attention = ({passage_question_attention, question_tokens, passage_tokens}
   }
   return null;
 }
+const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData, attackModel}) => {
+  console.log("rua",attackData);
+  console.log("rua",attackModel);
+  console.log("requestData", requestData);
+
+  if(requestData && passage_question_attention && question_tokens && passage_tokens && attackModel) {
+  var attack_visual = '';
+  if (attackData === undefined) {
+    attack_visual = "placeholder"
+  }
+  else{
+    attack_visual = attackData["final"].join(" ")
+  }
+  console.log("attack_visual",attack_visual);
+  return(
+
+   <OutputField label="Model internals">
+   <Accordion accordion={false}>
+   <AccordionItem expanded={true}>
+    <AccordionItemTitle>
+      Pathologies Attack
+      <div className="accordion__arrow" role="presentation"/>
+    </AccordionItemTitle>
+    <AccordionItemBody>
+      <p>
+        This attack reduces the inputs by removing the least important word at each iteration.
+        Beam search is used for better global optimial attack.
+      </p>
+      <p> {attack_visual}
+
+      </p>
+          <div className="form__field form__field--btn">
+              <button
+               id="input--mc-submit"
+               type="button"
+               className="btn btn--icon-disclosure"
+               onClick={ () => attackModel(requestData) }>Attack
+                  <svg>
+                      <use xlinkHref="#icon__disclosure"></use>
+                  </svg>
+              </button>
+           </div>
+     </AccordionItemBody>
+   </AccordionItem>
+   </Accordion>
+
+   </OutputField>
+  )
+  }
+  return null;
+
+
+}
 
 const NoAnswer = () => {
   return (
@@ -131,12 +184,12 @@ const ArithmeticEquation = ({numbers}) => {
   return null;
 }
 
-const AnswerByType = ({requestData, responseData}) => {
+const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
   if(requestData && responseData) {
     const { passage, question } = requestData;
     const { answer } = responseData;
     const { answer_type } = answer || {};
-
+    console.log("muamua",answer_type);
     switch(answer_type) {
       case "passage_span": {
         const { spans, value } = answer || {};
@@ -161,6 +214,7 @@ const AnswerByType = ({requestData, responseData}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
 
               <Attention {...responseData}/>
             </section>
@@ -192,6 +246,7 @@ const AnswerByType = ({requestData, responseData}) => {
                   highlightSpans={spans}
                   highlightStyles={spans.map(s => "highlight__answer")}/>
               </OutputField>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
 
               <Attention {...responseData}/>
             </section>
@@ -220,6 +275,7 @@ const AnswerByType = ({requestData, responseData}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
 
               <Attention {...responseData}/>
             </section>
@@ -251,6 +307,7 @@ const AnswerByType = ({requestData, responseData}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
 
               <Attention {...responseData}/>
             </section>
@@ -281,6 +338,7 @@ const AnswerByType = ({requestData, responseData}) => {
                 {question}
               </OutputField>
 
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
               <Attention {...responseData}/>
             </section>
           )
@@ -452,7 +510,12 @@ const apiUrl = ({model}) => {
   const endpoint = taskEndpoints[selectedModel]
   return `${API_ROOT}/predict/${endpoint}`
 }
+const attackapiUrl = ({model}) => {
+  const selectedModel = model || (taskModels[0] && taskModels[0].name);
+  const endpoint = taskEndpoints[selectedModel]
+  return `${API_ROOT}/attack/${endpoint}`
+}
 
-const modelProps = {apiUrl, title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, attackapiUrl,title, description, descriptionEllipsed, fields, examples, Output}
 
 export default withRouter(props => <Model {...props} {...modelProps}/>)

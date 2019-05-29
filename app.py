@@ -101,11 +101,10 @@ def make_app(build_dir: str = None,
 
     for name, demo_model in models.items():
         logger.info(f"loading {name} model")
-        if name != "textual-entailment":
-            continue
-        predictor = demo_model.predictor()
-        app.predictors[name] = predictor
-        app.max_request_lengths[name] = demo_model.max_request_length
+        if (name == "machine-comprehension") or (name == "naqanet-reading-comprehension"):
+            predictor = demo_model.predictor()
+            app.predictors[name] = predictor
+            app.max_request_lengths[name] = demo_model.max_request_length
 
     @app.errorhandler(ServerError)
     def handle_invalid_usage(error: ServerError) -> Response:  # pylint: disable=unused-variable
@@ -179,7 +178,7 @@ def make_app(build_dir: str = None,
         if len(serialized_request) > max_request_length:
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
-        attack = model.attack_from_json(data)
+        attack = model.attack_from_json(data, "question",[])
         return jsonify(attack)
 
 
