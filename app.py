@@ -101,7 +101,8 @@ def make_app(build_dir: str = None,
 
     for name, demo_model in models.items():
         logger.info(f"loading {name} model")
-        if (name == "machine-comprehension") or (name == "naqanet-reading-comprehension"):
+        #if (name == "machine-comprehension") or (name == "naqanet-reading-comprehension"):
+        if (name == "textual-entailment"):
             predictor = demo_model.predictor()
             app.predictors[name] = predictor
             app.max_request_lengths[name] = demo_model.max_request_length

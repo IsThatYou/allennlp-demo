@@ -53,7 +53,7 @@ MODELS = {
                 19681
         ),
         'textual-entailment': DemoModel(
-                'https://s3-us-west-2.amazonaws.com/allennlp/models/decomposable-attention-elmo-2018.02.19.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/decomposable-attention-2017.09.04.tar.gz',
                 'textual-entailment',
                 13129
         ),
