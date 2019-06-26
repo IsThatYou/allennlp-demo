@@ -33,7 +33,7 @@ class DemoModel:
 # pylint: disable=line-too-long
 MODELS = {
         'machine-comprehension': DemoModel(
-                'bidaf-model-2017.09.15-charpad.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/bidaf-model-2017.09.15-charpad.tar.gz',
                 'machine-comprehension',
                 311108
         ),
