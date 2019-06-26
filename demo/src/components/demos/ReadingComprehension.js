@@ -11,6 +11,7 @@ import Model from '../Model'
 import OutputField from '../OutputField'
 import { API_ROOT } from '../../api-config';
 import { truncateText } from '../DemoInput'
+import styled from 'styled-components';
 
 const title = "Reading Comprehension"
 //const attackapiUrl = () => `${API_ROOT}/attack/machine-comprehension`
@@ -78,20 +79,76 @@ const Attention = ({passage_question_attention, question_tokens, passage_tokens}
   }
   return null;
 }
-const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData, attackModel}) => {
+const ColorizedToken = styled.span`
+  background-color: ${props => props.backgroundColor};
+  padding: 5px;
+  margin: 5px;
+  display: inline-block;
+  border-radius: 3px;
+`;
+function postprocess(org,data) 
+{
+  let result_string = []
+  let result_string2 = []
+  console.log(org)
+  var obj = ''
+  for (let idx=0; idx<org.length; idx++) {
+    obj = org[idx]
+    
+    if (obj !== data[idx])
+    {
+      console.log(obj,data[idx])
+      result_string.push(
+        <ColorizedToken backgroundColor={"red"}
+        key={idx}>{obj} </ColorizedToken>)
+        result_string2.push(
+          <ColorizedToken backgroundColor={"green"}
+          key={idx}>{data[idx]} </ColorizedToken>)
+    }
+    else{
+      result_string.push(
+        <ColorizedToken backgroundColor={"transparent"}
+        key={idx}>{obj} </ColorizedToken>)
+        result_string2.push(
+          <ColorizedToken backgroundColor={"transparent"}
+          key={idx}>{data[idx]} </ColorizedToken>)
+    }
+    
+  }
+  
+  return [result_string,result_string2]
+}
+const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData,attackData2, attackModel,attackModel2}) => {
   console.log("rua",attackData);
   console.log("rua",attackModel);
   console.log("requestData", requestData);
 
   if(requestData && passage_question_attention && question_tokens && passage_tokens && attackModel) {
-  var attack_visual = '';
+    var attack_visual = '';
+    var attack_visual2 = '';
+    var attack_visual_og = '';
+    var attack_visual2_og = '';
   if (attackData === undefined) {
     attack_visual = "placeholder"
   }
   else{
-    attack_visual = attackData["final"].join(" ")
+    attack_visual = attackData["final"][0].join(" ")
+    attack_visual_og = attackData["original"].join(" ")
   }
-  console.log("attack_visual",attack_visual);
+
+  if (attackData2 === undefined) {
+    attack_visual2 = "placeholder"
+  }
+  else{
+    //attack_visual2= attackData2["final"].join(" ")
+    //var original = attackData2["original"]
+    console.log("attackData2",attackData2)
+    var [first,second] = postprocess(attackData2["original"],attackData2["final"][0])
+    attack_visual2 = second
+    attack_visual2_og = first
+    console.log(attack_visual2_og)
+  }
+  console.log("rua",attackData);
   return(
 
    <OutputField label="Model internals">
@@ -105,8 +162,14 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
       <p>
         This attack reduces the inputs by removing the least important word at each iteration.
         Beam search is used for better global optimial attack.
+
+
+
       </p>
-      <p> {attack_visual}
+      <p> original sentence: {attack_visual_og}
+
+      </p>
+      <p> perturbed sentence: {attack_visual}
 
       </p>
           <div className="form__field form__field--btn">
@@ -120,8 +183,40 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
                   </svg>
               </button>
            </div>
+
      </AccordionItemBody>
    </AccordionItem>
+   <AccordionItem expanded={true}>
+          <AccordionItemTitle>
+            Hotflip Attack
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+            <p>
+              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
+              semantic information
+            </p>
+            <p> 
+            original sentence: {attack_visual2_og} 
+            </p>
+            <p>
+            perturbed sentence: {attack_visual2}
+
+            </p>
+                <div className="form__field form__field--btn">
+                    <button
+                     id="input--mc-submit"
+                     type="button"
+                     className="btn btn--icon-disclosure"
+                     onClick={ () => attackModel2(requestData) }>Attack
+                        <svg>
+                            <use xlinkHref="#icon__disclosure"></use>
+                        </svg>
+                    </button>
+                </div>
+
+          </AccordionItemBody>
+        </AccordionItem>
    </Accordion>
 
    </OutputField>
@@ -184,7 +279,7 @@ const ArithmeticEquation = ({numbers}) => {
   return null;
 }
 
-const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
+const AnswerByType = ({requestData, responseData,attackData,attackData2,attackModel,attackModel2}) => {
   if(requestData && responseData) {
     const { passage, question } = requestData;
     const { answer } = responseData;
@@ -214,7 +309,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
-              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
 
               <Attention {...responseData}/>
             </section>
@@ -246,7 +341,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
                   highlightSpans={spans}
                   highlightStyles={spans.map(s => "highlight__answer")}/>
               </OutputField>
-              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
 
               <Attention {...responseData}/>
             </section>
@@ -275,7 +370,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
-              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
 
               <Attention {...responseData}/>
             </section>
@@ -307,7 +402,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
               <OutputField label="Question">
                 {question}
               </OutputField>
-              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
 
               <Attention {...responseData}/>
             </section>
@@ -338,7 +433,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackModel}) => {
                 {question}
               </OutputField>
 
-              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackModel={attackModel}/>
+              <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
               <Attention {...responseData}/>
             </section>
           )
@@ -515,7 +610,12 @@ const attackapiUrl = ({model}) => {
   const endpoint = taskEndpoints[selectedModel]
   return `${API_ROOT}/attack/${endpoint}`
 }
+const attackapiUrl2 = ({model}) => {
+  const selectedModel = model || (taskModels[0] && taskModels[0].name);
+  const endpoint = taskEndpoints[selectedModel]
+  return `${API_ROOT}/hotflip/${endpoint}`
+}
 
-const modelProps = {apiUrl, attackapiUrl,title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, attackapiUrl,attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 
 export default withRouter(props => <Model {...props} {...modelProps}/>)

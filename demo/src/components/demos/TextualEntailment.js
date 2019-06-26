@@ -11,9 +11,11 @@ import {
   AccordionItemBody,
   } from 'react-accessible-accordion';
 import '../../css/TeComponent.css';
+import styled from 'styled-components';
 
 const apiUrl = () => `${API_ROOT}/predict/textual-entailment`
 const attackapiUrl = () => `${API_ROOT}/attack/textual-entailment`
+const attackapiUrl2 = () => `${API_ROOT}/hotflip/textual-entailment`
 const title = "Textual Entailment"
 
 const description = (
@@ -75,8 +77,46 @@ const judgments = {
   ENTAILMENT: <span>the premise <strong>entails</strong> the hypothesis</span>,
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
-
-const Output = ({ responseData,requestData, attackData,attackModel}) => {
+const ColorizedToken = styled.span`
+  background-color: ${props => props.backgroundColor};
+  padding: 5px;
+  margin: 5px;
+  display: inline-block;
+  border-radius: 3px;
+`;
+function postprocess(org,data) 
+{
+  let result_string = []
+  let result_string2 = []
+  console.log(org)
+  var obj = ''
+  for (let idx=0; idx<org.length; idx++) {
+    obj = org[idx]
+    
+    if (obj !== data[idx])
+    {
+      console.log(obj,data[idx])
+      result_string.push(
+        <ColorizedToken backgroundColor={"red"}
+        key={idx}>{obj} </ColorizedToken>)
+        result_string2.push(
+          <ColorizedToken backgroundColor={"green"}
+          key={idx}>{data[idx]} </ColorizedToken>)
+    }
+    else{
+      result_string.push(
+        <ColorizedToken backgroundColor={"transparent"}
+        key={idx}>{obj} </ColorizedToken>)
+        result_string2.push(
+          <ColorizedToken backgroundColor={"transparent"}
+          key={idx}>{data[idx]} </ColorizedToken>)
+    }
+    
+  }
+  
+  return [result_string,result_string2]
+}
+const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2}) => {
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
 
@@ -133,11 +173,26 @@ const Output = ({ responseData,requestData, attackData,attackModel}) => {
   const x = 0.5 * (2 * b + c) / (a + b + c)
   const y = (c / (a + b + c))
   var attack_visual = '';
+  var attack_visual2 = '';
+  var attack_visual_og = '';
+  var attack_visual2_og = '';
   if (attackData === undefined) {
     attack_visual = "placeholder"
   }
   else{
-    attack_visual = attackData["final"].join(" ")
+    attack_visual = attackData["final"][0].join(" ")
+    attack_visual_og = attackData["original"].join(" ")
+  }
+  if (attackData2 === undefined) {
+    attack_visual2 = "placeholder"
+  }
+  else{
+    //attack_visual2= attackData2["final"].join(" ")
+    //var original = attackData2["original"]
+    var [first,second] = postprocess(attackData2["original"],attackData2["final"][0])
+    attack_visual2 = second
+    attack_visual2_og = first
+    console.log(attack_visual2_og)
   }
   console.log("rua",attackData);
   return (
@@ -186,7 +241,12 @@ const Output = ({ responseData,requestData, attackData,attackModel}) => {
               This attack reduces the inputs by removing the least important word at each iteration.
               Beam search is used for better global optimial attack.
             </p>
-            <p> {attack_visual}
+
+            <p>
+              original sentence {attack_visual_og}
+            </p>
+            <p> 
+              perturbed sentence: {attack_visual}
 
             </p>
                 <div className="form__field form__field--btn">
@@ -203,6 +263,39 @@ const Output = ({ responseData,requestData, attackData,attackModel}) => {
 
           </AccordionItemBody>
         </AccordionItem>
+
+          <AccordionItem expanded={true}>
+          <AccordionItemTitle>
+            Hotflip Attack
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+            <p>
+              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
+              semantic information
+            </p>
+            <p> 
+            original sentence: {attack_visual2_og} 
+            </p>
+            <p>
+            perturbed sentence: {attack_visual2}
+
+            </p>
+                <div className="form__field form__field--btn">
+                    <button
+                     id="input--mc-submit"
+                     type="button"
+                     className="btn btn--icon-disclosure"
+                     onClick={ () => attackModel2(requestData) }>Attack
+                        <svg>
+                            <use xlinkHref="#icon__disclosure"></use>
+                        </svg>
+                    </button>
+                </div>
+
+          </AccordionItemBody>
+        </AccordionItem>
+
 
 
         <AccordionItem expanded={true}>
@@ -260,6 +353,6 @@ const examples = [
   },
 ]
 
-const modelProps = {apiUrl, attackapiUrl, title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, attackapiUrl, attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 
 export default withRouter(props => <Model {...props} {...modelProps}/>)

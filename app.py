@@ -12,6 +12,7 @@ import os
 import sys
 import time
 from functools import lru_cache
+from collections import defaultdict
 
 from flask import Flask, request, Response, jsonify, send_file, send_from_directory
 from flask_cors import CORS
@@ -24,6 +25,7 @@ import pytz
 
 from allennlp.common.util import JsonDict, peak_memory_mb
 from allennlp.predictors import Predictor
+from allennlp.attack import Attacker
 
 from server.permalinks import int_to_slug, slug_to_int
 from server.db import DemoDatabase, PostgresDemoDatabase
@@ -96,14 +98,25 @@ def make_app(build_dir: str = None,
     start_time_str = start_time.strftime("%Y-%m-%d %H:%M:%S %Z")
 
     app.predictors = {}
+    app.attackers = defaultdict(dict)
     app.max_request_lengths = {}
     app.wsgi_app = ProxyFix(app.wsgi_app) # sets the requester IP with the X-Forwarded-For header
 
     for name, demo_model in models.items():
         logger.info(f"loading {name} model")
         #if (name == "machine-comprehension") or (name == "naqanet-reading-comprehension"):
-        if (name == "textual-entailment"):
+        if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
+            print(name)
             predictor = demo_model.predictor()
+
+            attacker = Attacker.by_name("pathologies")(predictor)
+            app.attackers[name]["pathologies"] = attacker
+
+            if (name == "textual-entailment" or name == "naqanet-reading-comprehension" or name == "machine-comprehension"or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
+            # if (name == "named-entity-recognition"):
+                attacker2 = Attacker.by_name("hotflip")(predictor)
+                app.attackers[name]["hotflip"] = attacker2
+
             app.predictors[name] = predictor
             app.max_request_lengths[name] = demo_model.max_request_length
 
@@ -169,19 +182,46 @@ def make_app(build_dir: str = None,
         if request.method == "OPTIONS":
             return Response(response="", status=200)
         lowered_model_name = model_name.lower()
-        model = app.predictors.get(lowered_model_name)
+        #model = app.predictors.get(lowered_model_name)
+        print(lowered_model_name)
+        model = app.attackers.get(lowered_model_name).get("pathologies")
         if model is None:
             raise ServerError("unknown model: {}".format(model_name), status_code=400)
         max_request_length = app.max_request_lengths[lowered_model_name]
         data = request.get_json()
-
         serialized_request = json.dumps(data)
         if len(serialized_request) > max_request_length:
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
-        attack = model.attack_from_json(data, "question",[])
+        temp = {"machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
+        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
+        
+        attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
         return jsonify(attack)
 
+    @app.route('/hotflip/<model_name>', methods=['POST','OPTIONS'])
+    def hotflip(model_name: str) -> Response:
+        """make a prediction using the specified model and return the results"""
+        if request.method == "OPTIONS":
+            return Response(response="", status=200)
+        lowered_model_name = model_name.lower()
+        #model = app.predictors.get(lowered_model_name)
+        print(lowered_model_name)
+        print(app.attackers)
+        model = app.attackers.get(lowered_model_name).get("hotflip")
+        if model is None:
+            raise ServerError("unknown model: {}".format(model_name), status_code=400)
+        max_request_length = app.max_request_lengths[lowered_model_name]
+        data = request.get_json()
+        serialized_request = json.dumps(data)
+        if len(serialized_request) > max_request_length:
+            raise ServerError(f"Max request length exceeded for model {model_name}! " +
+                              f"Max: {max_request_length} Actual: {len(serialized_request)}")
+        temp = {"machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
+        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
+        
+        attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
+        return jsonify(attack)
 
     @app.route('/predict/<model_name>', methods=['POST', 'OPTIONS'])
     def predict(model_name: str) -> Response:  # pylint: disable=unused-variable

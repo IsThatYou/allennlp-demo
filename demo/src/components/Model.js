@@ -17,6 +17,7 @@ class Model extends React.Component {
 
       this.runModel = this.runModel.bind(this)
       this.attackModel = this.attackModel.bind(this)
+      this.attackModel2 = this.attackModel2.bind(this)
     }
 
     runModel(inputs) {
@@ -68,6 +69,26 @@ class Model extends React.Component {
         this.setState({attackData: json})
       });
     }
+      attackModel2(inputs) {
+      const { selectedModel, attackapiUrl2 } = this.props
+
+      fetch(attackapiUrl2(inputs), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inputs)
+      }).then((response) => {
+        // console.log(response.json())
+        return response.json();
+      }).then((json) => {
+        //console.log(json)
+        this.setState({attackData2: json})
+      });
+    }
+
+
 
     render() {
         const { title, description, descriptionEllipsed, examples, fields, selectedModel, vertical, Output } = this.props;
@@ -84,7 +105,7 @@ class Model extends React.Component {
                                      outputState={outputState}
                                      runModel={this.runModel}/>
 
-        const demoOutput = requestData && responseData ? <Output {...this.state} attackModel={this.attackModel}/> : null
+        const demoOutput = requestData && responseData ? <Output {...this.state} attackModel={this.attackModel} attackModel2={this.attackModel2}/> : null
         let className, InputPane, OutputPane
         if (vertical) {
           className = "pane model"

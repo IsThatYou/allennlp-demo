@@ -6,7 +6,18 @@ import { Highlight } from '../highlight/Highlight';
 import Model from '../Model'
 import { truncateText } from '../DemoInput'
 
+import OutputField from '../OutputField'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemTitle,
+  AccordionItemBody,
+  } from 'react-accessible-accordion';
+import styled from 'styled-components';
+
 // LOC, PER, ORG, MISC
+const attackapiUrl = () => `${API_ROOT}/attack/named-entity-recognition`
+const attackapiUrl2 = () => `${API_ROOT}/hotflip/named-entity-recognition`
 
 const title = "Named Entity Recognition";
 
@@ -165,8 +176,69 @@ const TokenSpan = ({ token }) => {
       return (<span>{token.text} </span>);
     }
 }
-
-const Output = ({ responseData }) => {
+const ColorizedToken = styled.span`
+  background-color: ${props => props.backgroundColor};
+  padding: 5px;
+  margin: 5px;
+  display: inline-block;
+  border-radius: 3px;
+`;
+function postprocess(org,perturbed_data) 
+{
+  let result_string = []
+  let result_string3 = []
+  for (let i=0; i<perturbed_data.length; i++) {
+    let result_string2 = []
+    console.log(org)
+    var obj = ''
+    var data = perturbed_data[i]
+    for (let idx=0; idx<org.length; idx++) {
+      obj = org[idx]
+      if (obj !== data[idx])
+      {
+        console.log(obj,data[idx])
+        result_string.push(
+          <ColorizedToken backgroundColor={"transparent"}
+          key={idx}>{obj} </ColorizedToken>)
+          result_string2.push(
+            <ColorizedToken backgroundColor={"green"}
+            key={idx}>{data[idx]} </ColorizedToken>)
+      }
+      else{
+        result_string.push(
+          <ColorizedToken backgroundColor={"transparent"}
+          key={idx}>{obj} </ColorizedToken>)
+          result_string2.push(
+            <ColorizedToken backgroundColor={"transparent"}
+            key={idx}>{data[idx]} </ColorizedToken>)
+      }
+      
+    }
+    result_string3.push(result_string2)
+}
+  
+  return [result_string,result_string3]
+}
+const AttackOut = ({ formattedTokens, attackData }) => {
+  console.log(formattedTokens)
+  let sentences = []
+  if (attackData === undefined) {
+    return (<span>placeholder</span>);
+  }
+  else{
+    for (let idx=0; idx<attackData["final"].length; idx++)
+    {
+      sentences.push(attackData["final"][idx].join(" "))
+    }
+    
+  }
+  return (
+    <div>
+    {sentences.map((s) => <p>{s}</p>)}
+    </div>
+  );
+}
+const Output = ({ attackModel,requestData,responseData,attackData,attackData2,attackModel2 }) => {
     const { words, tags } = responseData
 
     // "B" = "Beginning" (first token in a sequence of tokens comprising an entity)
@@ -217,15 +289,111 @@ const Output = ({ responseData }) => {
         formattedTokens.push(tokenObj);
       }
     });
+    var attack_visual = '';
+    var attack_visual2 = '';
+    var attack_visual_og = '';
+    var attack_visual2_og = '';
+    if (attackData === undefined) {
+      attack_visual = "placeholder"
+    }
+    else{
+      let obj = []
+      for (let idx=0; idx<attackData["final"].length; idx++)
+      {
+        obj.push(attackData["final"][idx].join(" "))
+      }
+      attack_visual = obj.join("\n")
+      attack_visual_og = attackData["original"].join(" ")
+    }
 
+    if (attackData2 === undefined) {
+      attack_visual2 = "placeholder"
+    }
+    else{
+      //attack_visual2= attackData2["final"].join(" ")
+      //var original = attackData2["original"]
+      console.log("attackData2",attackData2)
+      var [first,second] = postprocess(attackData2["original"],attackData2["final"])
+      attack_visual2 = second
+      attack_visual2_og = first
+      console.log("attack_visual2",attack_visual2)
+      console.log(attack_visual2_og)
+    }
     return (
+      
       <div className="model__content model__content--ner-output">
         <div className="form__field">
           <HighlightContainer layout="bottom-labels">
             {formattedTokens.map((token, i) => <TokenSpan key={i} token={token} />)}
           </HighlightContainer>
         </div>
+        <OutputField label=" Model internals">
+          <Accordion accordion={false}>
+                <AccordionItem expanded={true}>
+                <AccordionItemTitle>
+                Pathologies Attack
+                  <div className="accordion__arrow" role="presentation"/>
+                </AccordionItemTitle>
+                <AccordionItemBody>
+                  <p>
+                  This attack reduces the inputs by removing the least important word at each iteration.
+              Beam search is used for better global optimial attack.
+                  </p>
+                  <p> original sentence: {attack_visual_og} 
+                  </p>
+                  <p>
+                  perturbed sentence: <AttackOut formattedTokens = {formattedTokens} attackData = {attackData} />
+      
+                  </p>
+                      <div className="form__field form__field--btn">
+                          <button
+                           id="input--mc-submit"
+                           type="button"
+                           className="btn btn--icon-disclosure"
+                           onClick={ () => attackModel(requestData) }>Attack
+                              <svg>
+                                  <use xlinkHref="#icon__disclosure"></use>
+                              </svg>
+                          </button>
+                      </div>
+                </AccordionItemBody>
+              </AccordionItem>
+        <AccordionItem expanded={true}>
+          <AccordionItemTitle>
+            Hotflip Attack
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+            <p>
+              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
+              semantic information
+            </p>
+            <p> 
+            original sentence: {attack_visual2_og} 
+            </p>
+            <p>
+            perturbed sentence: {attack_visual2}
+
+            </p>
+                <div className="form__field form__field--btn">
+                    <button
+                     id="input--mc-submit"
+                     type="button"
+                     className="btn btn--icon-disclosure"
+                     onClick={ () => attackModel2(requestData) }>Attack
+                        <svg>
+                            <use xlinkHref="#icon__disclosure"></use>
+                        </svg>
+                    </button>
+                </div>
+
+          </AccordionItemBody>
+        </AccordionItem>
+              </Accordion>
+    </OutputField>
       </div>
+
+
     )
 }
 
@@ -244,6 +412,6 @@ const apiUrl = ({model}) => {
     return `${API_ROOT}/predict/${endpoint}`
 }
 
-const modelProps = {apiUrl, title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, attackapiUrl,attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 
 export default withRouter(props => <Model {...props} {...modelProps}/>)
