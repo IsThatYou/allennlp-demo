@@ -206,6 +206,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
       <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>      
       {attack_visual != " " ? <p><strong>Original Input:</strong> {attack_visual_og}</p> : <p style={{color: "#7c7c7c"}}>Press "reduce input" to run input reduction.</p>}    
       {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}          
+      {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}          
               <button
                 type="button"
                 className="btn"
@@ -630,7 +631,7 @@ const attackapiUrl = ({model}) => {
 const attackapiUrl2 = ({model}) => {
   const selectedModel = model || (taskModels[0] && taskModels[0].name);
   const endpoint = taskEndpoints[selectedModel]
-  return `${API_ROOT}/HotFlip/${endpoint}`
+  return `${API_ROOT}/hotflip/${endpoint}`
 }
 
 const modelProps = {apiUrl, attackapiUrl,attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}

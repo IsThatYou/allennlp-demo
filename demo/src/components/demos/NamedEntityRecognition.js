@@ -17,7 +17,7 @@ import styled from 'styled-components';
 
 // LOC, PER, ORG, MISC
 const attackapiUrl = () => `${API_ROOT}/attack/named-entity-recognition`
-const attackapiUrl2 = () => `${API_ROOT}/HotFlip/named-entity-recognition`
+const attackapiUrl2 = () => `${API_ROOT}/hotflip/named-entity-recognition`
 
 const title = "Named Entity Recognition";
 

@@ -104,21 +104,20 @@ def make_app(build_dir: str = None,
 
     for name, demo_model in models.items():
         logger.info(f"loading {name} model")
-        #if (name == "machine-comprehension") or (name == "naqanet-reading-comprehension"):
-        if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
+        #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
+        # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
+        if (name == "sentiment-analysis"):            
             print(name)
             predictor = demo_model.predictor()
-
-            attacker = Attacker.by_name("pathologies")(predictor)
-            app.attackers[name]["pathologies"] = attacker
-
-            if (name == "textual-entailment" or name == "naqanet-reading-comprehension" or name == "machine-comprehension"or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
-            # if (name == "named-entity-recognition"):
-                attacker2 = Attacker.by_name("hotflip")(predictor)
-                app.attackers[name]["hotflip"] = attacker2
+            
+            # attacker = Attacker.by_name("pathologies")(predictor)
+            # app.attackers[name]["pathologies"] = attacker
+            
+            # attacker2 = Attacker.by_name("hotflip")(predictor)
+            # app.attackers[name]["hotflip"] = attacker2
 
             app.predictors[name] = predictor
-            app.max_request_lengths[name] = demo_model.max_request_length
+            app.max_request_lengths[name] = demo_model.max_request_length                        
 
     @app.errorhandler(ServerError)
     def handle_invalid_usage(error: ServerError) -> Response:  # pylint: disable=unused-variable
@@ -309,6 +308,8 @@ def make_app(build_dir: str = None,
             log_blob["outputs"]["label_probs"] = prediction["label_probs"]
         elif model_name == "named-entity-recognition":
             log_blob["outputs"]["tags"] = prediction["tags"]
+        elif model_name == "sentiment-analysis":
+            log_blob["outputs"]["class_probabilities"] = prediction["class_probabilities"]
         elif model_name == "semantic-role-labeling":
             verbs = []
             for verb in prediction["verbs"]:

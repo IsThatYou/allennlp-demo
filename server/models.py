@@ -53,7 +53,7 @@ MODELS = {
                 19681
         ),
         'textual-entailment': DemoModel(
-                'https://s3-us-west-2.amazonaws.com/allennlp/models/decomposable-attention-2017.09.04.tar.gz',
+                'decomposable-attention-2017.09.04.tar.gz',
                 'textual-entailment',
                 13129
         ),
@@ -102,6 +102,11 @@ MODELS = {
                 'atis-parser',
                 2236
         ),
+        'sentiment-analysis': DemoModel(
+                'sst-5-elmo-biattentive-classification-network-2018.09.04.tar.gz',
+                'sentiment-analysis',
+                1000
+        ),        
         'quarel-parser-zero': DemoModel(
                 'https://s3-us-west-2.amazonaws.com/allennlp/models/quarel-parser-zero-2018.12.20.tar.gz',
                 'quarel-parser',
