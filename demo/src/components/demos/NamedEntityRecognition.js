@@ -219,25 +219,7 @@ function postprocess(org,perturbed_data)
   
   return [result_string,result_string3]
 }
-// const AttackOut = ({ formattedTokens, attackData }) => {
-//   console.log(formattedTokens)
-//   let sentences = []
-//   if (attackData === undefined) {
-//     return (<span> </span>);
-//   }
-//   else{
-//     for (let idx=0; idx<attackData["final"].length; idx++)
-//     {
-//       sentences.push(attackData["final"][idx].join(" "))
-//     }
-    
-//   }
-//   return (
-//     <div>
-//     {sentences.map((s) => <p>{s}</p>)}
-//     </div>
-//   );
-// }
+
 const Output = ({ attackModel,requestData,responseData,attackData,attackData2,attackModel2 }) => {
     const { words, tags } = responseData
 
