@@ -56,7 +56,7 @@ const fields = [
 const Attention = ({passage_question_attention, question_tokens, passage_tokens}) => {
   if(passage_question_attention && question_tokens && passage_tokens) {
     return (
-        <OutputField label="Model internals">
+        <OutputField>
           <Accordion accordion={false}>
             <AccordionItem expanded={false}>
               <AccordionItemTitle>
@@ -81,11 +81,20 @@ const Attention = ({passage_question_attention, question_tokens, passage_tokens}
 }
 const ColorizedToken = styled.span`
   background-color: ${props => props.backgroundColor};
-  padding: 5px;
-  margin: 5px;
+  padding: 1px;
+  margin: 1px;
   display: inline-block;
   border-radius: 3px;
 `;
+const BlankToken = styled.span`
+  background-color: transparent;
+  color: white;
+  padding: 1px;
+  margin: 1px;
+  display: inline-block;
+  border-radius: 3px;
+`;
+
 function postprocess(org,data) 
 {
   let result_string = []
@@ -99,10 +108,10 @@ function postprocess(org,data)
     {
       console.log(obj,data[idx])
       result_string.push(
-        <ColorizedToken backgroundColor={"red"}
+        <ColorizedToken backgroundColor={"#FF5733"}
         key={idx}>{obj} </ColorizedToken>)
         result_string2.push(
-          <ColorizedToken backgroundColor={"green"}
+          <ColorizedToken backgroundColor={"#26BD19"}
           key={idx}>{data[idx]} </ColorizedToken>)
     }
     else{
@@ -118,6 +127,50 @@ function postprocess(org,data)
   
   return [result_string,result_string2]
 }
+
+function postprocess2(org,data) 
+{
+  let result_string = []
+  let result_string2 = []  
+  var idx = 0;
+  var idx2 = 0;
+  while (idx2<=data.length){
+    console.log("one")
+    console.log(org[idx])
+    console.log(data[idx2])
+    if (org[idx] == data[idx2]){
+      result_string.push(
+        <ColorizedToken backgroundColor={"transparent"}
+        key={idx}>{org[idx]} </ColorizedToken>);
+      result_string2.push(
+        <ColorizedToken backgroundColor={"transparent"}
+        key={idx}>{data[idx2]} </ColorizedToken>);      
+      idx++;
+      idx2++;
+    }       
+    else {
+      while (idx<=org.length && org[idx] != data[idx2]){
+        result_string.push(
+          <ColorizedToken backgroundColor={"#FF5733"}
+          key={idx}><strike>{org[idx]}</strike> </ColorizedToken>);
+
+        result_string2.push(
+          <BlankToken key={idx}>{org[idx]} </BlankToken>);
+          idx++;    
+        console.log("two")
+        console.log(org[idx])
+        console.log(data[idx2])
+      }
+    }
+  }
+
+  console.log("finish")
+  console.log(result_string)
+  console.log(result_string2)
+  console.log("yeet")
+  return [result_string,result_string2]
+}
+
 const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData,attackData2, attackModel,attackModel2}) => {
   console.log("rua",attackData);
   console.log("rua",attackModel);
@@ -129,15 +182,22 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     var attack_visual_og = '';
     var attack_visual2_og = '';
   if (attackData === undefined) {
-    attack_visual = "placeholder"
+    attack_visual = " "
   }
-  else{
-    attack_visual = attackData["final"][0].join(" ")
-    attack_visual_og = attackData["original"].join(" ")
+  else{    
+    console.log("test");
+    console.log(attackData["original"]);
+    console.log(attackData["final"][0]);
+    var [first,second] = postprocess2(attackData["original"],attackData["final"][0])
+    console.log(first);
+    console.log(second);
+    console.log("end");
+    attack_visual = second
+    attack_visual_og = first
   }
 
   if (attackData2 === undefined) {
-    attack_visual2 = "placeholder"
+    attack_visual2 = " "
   }
   else{
     //attack_visual2= attackData2["final"].join(" ")
@@ -151,38 +211,23 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
   console.log("rua",attackData);
   return(
 
-   <OutputField label="Model internals">
+   <OutputField>
    <Accordion accordion={false}>
    <AccordionItem expanded={true}>
     <AccordionItemTitle>
-      Pathologies Attack
+      Input Reduction
       <div className="accordion__arrow" role="presentation"/>
     </AccordionItemTitle>
     <AccordionItemBody>
-      <p>
-        This attack reduces the inputs by removing the least important word at each iteration.
-        Beam search is used for better global optimial attack.
-
-
-
-      </p>
-      <p> original sentence: {attack_visual_og}
-
-      </p>
-      <p> perturbed sentence: {attack_visual}
-
-      </p>
-          <div className="form__field form__field--btn">
+      <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>      
+      {attack_visual != " " ? <p><strong>Original Input:</strong> {attack_visual_og}</p> : <p style={{color: "#7c7c7c"}}>Press "reduce input" to run input reduction.</p>}    
+      {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}          
               <button
-               id="input--mc-submit"
-               type="button"
-               className="btn btn--icon-disclosure"
-               onClick={ () => attackModel(requestData) }>Attack
-                  <svg>
-                      <use xlinkHref="#icon__disclosure"></use>
-                  </svg>
-              </button>
-           </div>
+                type="button"
+                className="btn"
+                style={{margin: "30px 0px"}}
+                onClick={ () => attackModel(requestData) }>Reduce Input
+              </button>        
 
      </AccordionItemBody>
    </AccordionItem>
@@ -191,29 +236,17 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
             Hotflip Attack
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
-          <AccordionItemBody>
-            <p>
-              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
-              semantic information
-            </p>
-            <p> 
-            original sentence: {attack_visual2_og} 
-            </p>
-            <p>
-            perturbed sentence: {attack_visual2}
+          <AccordionItemBody>                      
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">Hotflip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
+            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run Hotflip.</p>}    
+            {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
 
-            </p>
-                <div className="form__field form__field--btn">
-                    <button
-                     id="input--mc-submit"
-                     type="button"
-                     className="btn btn--icon-disclosure"
-                     onClick={ () => attackModel2(requestData) }>Attack
-                        <svg>
-                            <use xlinkHref="#icon__disclosure"></use>
-                        </svg>
-                    </button>
-                </div>
+                <button
+                  type="button"
+                  className="btn"
+                  style={{margin: "30px 0px"}}
+                  onClick={ () => attackModel2(requestData) }>Flip Words
+                </button>
 
           </AccordionItemBody>
         </AccordionItem>

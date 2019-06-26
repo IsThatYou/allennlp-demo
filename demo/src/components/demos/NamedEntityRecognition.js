@@ -223,7 +223,7 @@ const AttackOut = ({ formattedTokens, attackData }) => {
   console.log(formattedTokens)
   let sentences = []
   if (attackData === undefined) {
-    return (<span>placeholder</span>);
+    return (<span> </span>);
   }
   else{
     for (let idx=0; idx<attackData["final"].length; idx++)
@@ -294,7 +294,7 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
     var attack_visual_og = '';
     var attack_visual2_og = '';
     if (attackData === undefined) {
-      attack_visual = "placeholder"
+      attack_visual = " "
     }
     else{
       let obj = []
@@ -307,7 +307,7 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
     }
 
     if (attackData2 === undefined) {
-      attack_visual2 = "placeholder"
+      attack_visual2 = " "
     }
     else{
       //attack_visual2= attackData2["final"].join(" ")
@@ -327,35 +327,25 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
             {formattedTokens.map((token, i) => <TokenSpan key={i} token={token} />)}
           </HighlightContainer>
         </div>
-        <OutputField label=" Model internals">
+        <OutputField>
           <Accordion accordion={false}>
                 <AccordionItem expanded={true}>
                 <AccordionItemTitle>
-                Pathologies Attack
+                Input Reduction
                   <div className="accordion__arrow" role="presentation"/>
                 </AccordionItemTitle>
-                <AccordionItemBody>
-                  <p>
-                  This attack reduces the inputs by removing the least important word at each iteration.
-              Beam search is used for better global optimial attack.
-                  </p>
-                  <p> original sentence: {attack_visual_og} 
-                  </p>
-                  <p>
-                  perturbed sentence: <AttackOut formattedTokens = {formattedTokens} attackData = {attackData} />
+                <AccordionItemBody>                  
+                  <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>                                                     
+                  <p><strong>Original Input: {attack_visual_og} </strong></p>                                
+                  <p><strong>Reduced Input: <AttackOut formattedTokens = {formattedTokens} attackData = {attackData} /></strong>
       
                   </p>
-                      <div className="form__field form__field--btn">
-                          <button
-                           id="input--mc-submit"
-                           type="button"
-                           className="btn btn--icon-disclosure"
-                           onClick={ () => attackModel(requestData) }>Attack
-                              <svg>
-                                  <use xlinkHref="#icon__disclosure"></use>
-                              </svg>
-                          </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="btn"
+                        style={{margin: "30px 0px"}}
+                        onClick={ () => attackModel(requestData) }>Reduce Input
+                      </button>  
                 </AccordionItemBody>
               </AccordionItem>
         <AccordionItem expanded={true}>
@@ -375,17 +365,12 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
             perturbed sentence: {attack_visual2}
 
             </p>
-                <div className="form__field form__field--btn">
-                    <button
-                     id="input--mc-submit"
-                     type="button"
-                     className="btn btn--icon-disclosure"
-                     onClick={ () => attackModel2(requestData) }>Attack
-                        <svg>
-                            <use xlinkHref="#icon__disclosure"></use>
-                        </svg>
-                    </button>
-                </div>
+                  <button
+                  type="button"
+                  className="btn"
+                  style={{margin: "30px 0px"}}
+                  onClick={ () => attackModel2(requestData) }>Flip Words
+                </button>
 
           </AccordionItemBody>
         </AccordionItem>

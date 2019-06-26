@@ -227,39 +227,25 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
       </table>
     </div>
     </div>
-    <OutputField label=" Model internals">
+    <OutputField>
       <Accordion accordion={false}>
 
 
        <AccordionItem expanded={true}>
           <AccordionItemTitle>
-            Pathologies Attack
+            Input Reduction
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
           <AccordionItemBody>
-            <p>
-              This attack reduces the inputs by removing the least important word at each iteration.
-              Beam search is used for better global optimial attack.
-            </p>
-
-            <p>
-              original sentence {attack_visual_og}
-            </p>
-            <p> 
-              perturbed sentence: {attack_visual}
-
-            </p>
-                <div className="form__field form__field--btn">
-                    <button
-                     id="input--mc-submit"
-                     type="button"
-                     className="btn btn--icon-disclosure"
-                     onClick={ () => attackModel(requestData) }>Attack
-                        <svg>
-                            <use xlinkHref="#icon__disclosure"></use>
-                        </svg>
-                    </button>
-                </div>
+            <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>
+            {attack_visual != " " ? <p><strong>Original Input:</strong> {attack_visual_og}</p> : <p style={{color: "#7c7c7c"}}>Press "reduce input" to run input reduction.</p>}    
+            {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}          
+                <button
+                  type="button"
+                  className="btn"
+                  style={{margin: "30px 0px"}}
+                  onClick={ () => attackModel(requestData) }>Reduce Input
+                </button>
 
           </AccordionItemBody>
         </AccordionItem>
@@ -269,29 +255,16 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
             Hotflip Attack
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
-          <AccordionItemBody>
-            <p>
-              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
-              semantic information
-            </p>
-            <p> 
-            original sentence: {attack_visual2_og} 
-            </p>
-            <p>
-            perturbed sentence: {attack_visual2}
-
-            </p>
-                <div className="form__field form__field--btn">
-                    <button
-                     id="input--mc-submit"
-                     type="button"
-                     className="btn btn--icon-disclosure"
-                     onClick={ () => attackModel2(requestData) }>Attack
-                        <svg>
-                            <use xlinkHref="#icon__disclosure"></use>
-                        </svg>
-                    </button>
-                </div>
+          <AccordionItemBody>            
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">Hotflip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
+            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run Hotflip.</p>}    
+            {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
+                <button
+                  type="button"
+                  className="btn"
+                  style={{margin: "30px 0px"}}
+                  onClick={ () => attackModel2(requestData) }>Flip Words
+                </button>
 
           </AccordionItemBody>
         </AccordionItem>
