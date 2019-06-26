@@ -17,7 +17,7 @@ import styled from 'styled-components';
 
 // LOC, PER, ORG, MISC
 const attackapiUrl = () => `${API_ROOT}/attack/named-entity-recognition`
-const attackapiUrl2 = () => `${API_ROOT}/hotflip/named-entity-recognition`
+const attackapiUrl2 = () => `${API_ROOT}/HotFlip/named-entity-recognition`
 
 const title = "Named Entity Recognition";
 
@@ -178,8 +178,8 @@ const TokenSpan = ({ token }) => {
 }
 const ColorizedToken = styled.span`
   background-color: ${props => props.backgroundColor};
-  padding: 5px;
-  margin: 5px;
+  padding: 1px;
+  margin: 1px;
   display: inline-block;
   border-radius: 3px;
 `;
@@ -219,25 +219,25 @@ function postprocess(org,perturbed_data)
   
   return [result_string,result_string3]
 }
-const AttackOut = ({ formattedTokens, attackData }) => {
-  console.log(formattedTokens)
-  let sentences = []
-  if (attackData === undefined) {
-    return (<span> </span>);
-  }
-  else{
-    for (let idx=0; idx<attackData["final"].length; idx++)
-    {
-      sentences.push(attackData["final"][idx].join(" "))
-    }
+// const AttackOut = ({ formattedTokens, attackData }) => {
+//   console.log(formattedTokens)
+//   let sentences = []
+//   if (attackData === undefined) {
+//     return (<span> </span>);
+//   }
+//   else{
+//     for (let idx=0; idx<attackData["final"].length; idx++)
+//     {
+//       sentences.push(attackData["final"][idx].join(" "))
+//     }
     
-  }
-  return (
-    <div>
-    {sentences.map((s) => <p>{s}</p>)}
-    </div>
-  );
-}
+//   }
+//   return (
+//     <div>
+//     {sentences.map((s) => <p>{s}</p>)}
+//     </div>
+//   );
+// }
 const Output = ({ attackModel,requestData,responseData,attackData,attackData2,attackModel2 }) => {
     const { words, tags } = responseData
 
@@ -289,6 +289,14 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
         formattedTokens.push(tokenObj);
       }
     });
+    
+    let relevantTokens = []
+    formattedTokens.forEach(token => {
+      if (token.entity !== null) {
+        relevantTokens.push(token)
+      }
+    })
+
     var attack_visual = '';
     var attack_visual2 = '';
     var attack_visual_og = '';
@@ -297,13 +305,23 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
       attack_visual = " "
     }
     else{
-      let obj = []
+      let reducedInputs = []
       for (let idx=0; idx<attackData["final"].length; idx++)
       {
-        obj.push(attackData["final"][idx].join(" "))
+        reducedInputs.push(
+        <div key={idx} style={{ display: "flex", flexWrap: "wrap" }}>
+          <p style={{ padding: "2px", margin: "3px" }}><strong>Reduced input for</strong></p>
+          <TokenSpan key={idx} token={relevantTokens[idx]} />
+          {attackData["final"][idx].join(" ")}
+          <br />
+        </div>
+    )
       }
-      attack_visual = obj.join("\n")
+      attack_visual = reducedInputs
       attack_visual_og = attackData["original"].join(" ")
+      console.log("yeet");
+      console.log(formattedTokens);
+      console.log(attack_visual);
     }
 
     if (attackData2 === undefined) {
@@ -335,11 +353,8 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
                   <div className="accordion__arrow" role="presentation"/>
                 </AccordionItemTitle>
                 <AccordionItemBody>                  
-                  <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>                                                     
-                  <p><strong>Original Input: {attack_visual_og} </strong></p>                                
-                  <p><strong>Reduced Input: <AttackOut formattedTokens = {formattedTokens} attackData = {attackData} /></strong>
-      
-                  </p>
+                  <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>              
+                  {attack_visual != " " ? <p>{attack_visual}</p> : <p style={{color: "#7c7c7c"}}>Press "reduce input" to run Input Reduction.</p>}                    
                       <button
                         type="button"
                         className="btn"
@@ -350,21 +365,12 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
               </AccordionItem>
         <AccordionItem expanded={true}>
           <AccordionItemTitle>
-            Hotflip Attack
+            HotFlip Attack
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
           <AccordionItemBody>
-            <p>
-              Hotflip attack flips the word to create adverse effects, and change the results without changing too much
-              semantic information
-            </p>
-            <p> 
-            original sentence: {attack_visual2_og} 
-            </p>
-            <p>
-            perturbed sentence: {attack_visual2}
-
-            </p>
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the question to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                            
+                  {attack_visual2 != " " ? <p><strong>Flipped Inputs:</strong> {attack_visual2}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}                      
                   <button
                   type="button"
                   className="btn"
