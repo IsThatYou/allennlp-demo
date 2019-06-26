@@ -79,8 +79,8 @@ const judgments = {
 }
 const ColorizedToken = styled.span`
   background-color: ${props => props.backgroundColor};
-  padding: 5px;
-  margin: 5px;
+  padding: 1px;
+  margin: 1px;
   display: inline-block;
   border-radius: 3px;
 `;
@@ -97,10 +97,10 @@ function postprocess(org,data)
     {
       console.log(obj,data[idx])
       result_string.push(
-        <ColorizedToken backgroundColor={"red"}
+        <ColorizedToken backgroundColor={"#FF5733"}
         key={idx}>{obj} </ColorizedToken>)
         result_string2.push(
-          <ColorizedToken backgroundColor={"green"}
+          <ColorizedToken backgroundColor={"#26BD19"}
           key={idx}>{data[idx]} </ColorizedToken>)
     }
     else{
@@ -176,23 +176,32 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
   var attack_visual2 = '';
   var attack_visual_og = '';
   var attack_visual2_og = '';
+  var prediction2 = '';
   if (attackData === undefined) {
-    attack_visual = "placeholder"
+    attack_visual = " "
   }
   else{
     attack_visual = attackData["final"][0].join(" ")
     attack_visual_og = attackData["original"].join(" ")
   }
   if (attackData2 === undefined) {
-    attack_visual2 = "placeholder"
+    attack_visual2 = " "
   }
   else{
     //attack_visual2= attackData2["final"].join(" ")
-    //var original = attackData2["original"]
+    //var original = attackData2["original"]    
     var [first,second] = postprocess(attackData2["original"],attackData2["final"][0])
     attack_visual2 = second
-    attack_visual2_og = first
-    console.log(attack_visual2_og)
+    attack_visual2_og = first    
+    if (attackData2['label'] == "0"){
+      prediction2 = "Entailment";
+    }
+    else if (attackData2['label'] == "1"){
+      prediction2 = "Contradiction";
+    }
+    else if (attackData2['label'] == "2"){
+      prediction2 = "Neutral";
+    }      
   }
   console.log("rua",attackData);
   return (
@@ -252,13 +261,14 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 
           <AccordionItem expanded={true}>
           <AccordionItemTitle>
-            Hotflip Attack
+            HotFlip Attack
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
           <AccordionItemBody>            
-            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">Hotflip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
-            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run Hotflip.</p>}    
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the Hypothesis to change the model's prediction. We iteratively flip the word in the Hypothesis with the highest gradient until the prediction changes.</p>                                
+            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}    
             {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
+            {attack_visual2 != " " ? <p><strong>New Prediction:</strong> {prediction2}</p> : <p></p>}      
                 <button
                   type="button"
                   className="btn"

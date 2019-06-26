@@ -134,10 +134,7 @@ function postprocess2(org,data)
   let result_string2 = []  
   var idx = 0;
   var idx2 = 0;
-  while (idx2<=data.length){
-    console.log("one")
-    console.log(org[idx])
-    console.log(data[idx2])
+  while (idx2<=data.length){    
     if (org[idx] == data[idx2]){
       result_string.push(
         <ColorizedToken backgroundColor={"transparent"}
@@ -156,18 +153,11 @@ function postprocess2(org,data)
 
         result_string2.push(
           <BlankToken key={idx}>{org[idx]} </BlankToken>);
-          idx++;    
-        console.log("two")
-        console.log(org[idx])
-        console.log(data[idx2])
+          idx++;            
       }
     }
   }
-
-  console.log("finish")
-  console.log(result_string)
-  console.log(result_string2)
-  console.log("yeet")
+  
   return [result_string,result_string2]
 }
 
@@ -185,13 +175,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     attack_visual = " "
   }
   else{    
-    console.log("test");
-    console.log(attackData["original"]);
-    console.log(attackData["final"][0]);
-    var [first,second] = postprocess2(attackData["original"],attackData["final"][0])
-    console.log(first);
-    console.log(second);
-    console.log("end");
+    var [first,second] = postprocess2(attackData["original"],attackData["final"][0])    
     attack_visual = second
     attack_visual_og = first
   }
@@ -233,12 +217,12 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
    </AccordionItem>
    <AccordionItem expanded={true}>
           <AccordionItemTitle>
-            Hotflip Attack
+            HotFlip Attack
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
           <AccordionItemBody>                      
-            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">Hotflip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
-            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run Hotflip.</p>}    
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the question to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
+            {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}    
             {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
 
                 <button
@@ -646,7 +630,7 @@ const attackapiUrl = ({model}) => {
 const attackapiUrl2 = ({model}) => {
   const selectedModel = model || (taskModels[0] && taskModels[0].name);
   const endpoint = taskEndpoints[selectedModel]
-  return `${API_ROOT}/hotflip/${endpoint}`
+  return `${API_ROOT}/HotFlip/${endpoint}`
 }
 
 const modelProps = {apiUrl, attackapiUrl,attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
