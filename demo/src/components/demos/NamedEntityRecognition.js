@@ -5,7 +5,6 @@ import HighlightContainer from '../highlight/HighlightContainer';
 import { Highlight } from '../highlight/Highlight';
 import Model from '../Model'
 import { truncateText } from '../DemoInput'
-
 import OutputField from '../OutputField'
 import {
   Accordion,
@@ -14,10 +13,7 @@ import {
   AccordionItemBody,
   } from 'react-accessible-accordion';
 import styled from 'styled-components';
-
-// LOC, PER, ORG, MISC
-const attackapiUrl = () => `${API_ROOT}/attack/named-entity-recognition`
-const attackapiUrl2 = () => `${API_ROOT}/hotflip/named-entity-recognition`
+import{ColorizedToken, postprocessHotflip, postprocessInputReduction} from '../Attack'
 
 const title = "Named Entity Recognition";
 
@@ -176,50 +172,6 @@ const TokenSpan = ({ token }) => {
       return (<span>{token.text} </span>);
     }
 }
-const ColorizedToken = styled.span`
-  background-color: ${props => props.backgroundColor};
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
-
-function postprocess(org,perturbed_data) 
-{
-  let result_string = []
-  let result_string3 = []
-  for (let i=0; i<perturbed_data.length; i++) {
-    let result_string2 = []
-    console.log(org)
-    var obj = ''
-    var data = perturbed_data[i]
-    for (let idx=0; idx<org.length; idx++) {
-      obj = org[idx]
-      if (obj !== data[idx])
-      {
-        console.log(obj,data[idx])
-        result_string.push(
-          <ColorizedToken backgroundColor={"transparent"}
-          key={idx}>{obj} </ColorizedToken>)
-          result_string2.push(
-            <ColorizedToken backgroundColor={"green"}
-            key={idx}>{data[idx]} </ColorizedToken>)
-      }
-      else{
-        result_string.push(
-          <ColorizedToken backgroundColor={"transparent"}
-          key={idx}>{obj} </ColorizedToken>)
-          result_string2.push(
-            <ColorizedToken backgroundColor={"transparent"}
-            key={idx}>{data[idx]} </ColorizedToken>)
-      }
-      
-    }
-    result_string3.push(result_string2)
-  }
-  
-  return [result_string,result_string3]
-}
 
 const Output = ({ attackModel,requestData,responseData,attackData,attackData2,attackModel2 }) => {
     const { words, tags } = responseData
@@ -292,33 +244,43 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
       for (let idx=0; idx<attackData["final"].length; idx++)
       {
         reducedInputs.push(
-        <div key={idx} style={{ display: "flex", flexWrap: "wrap" }}>
-          <p style={{ padding: "2px", margin: "3px" }}><strong>Reduced input for</strong></p>
-          <TokenSpan key={idx} token={relevantTokens[idx]} />
-          {attackData["final"][idx].join(" ")}
-          <br />
-        </div>
-    )
+          <div key={idx} style={{ display: "flex", flexWrap: "wrap" }}>
+            <p style={{ padding: "2px", margin: "3px" }}><strong>Reduced input for</strong></p>
+            <TokenSpan key={idx} token={relevantTokens[idx]} />
+            {attackData["final"][idx].join(" ")}
+            <br />
+          </div>
+        )
       }
       attack_visual = reducedInputs
-      attack_visual_og = attackData["original"].join(" ")
-      console.log("yeet");
-      console.log(formattedTokens);
-      console.log(attack_visual);
+      attack_visual_og = attackData["original"].join(" ")      
     }
 
     if (attackData2 === undefined) {
       attack_visual2 = " "
     }
-    else{
-      //attack_visual2= attackData2["final"].join(" ")
-      //var original = attackData2["original"]
-      console.log("attackData2",attackData2)
-      var [first,second] = postprocess(attackData2["original"],attackData2["final"])
-      attack_visual2 = second
-      attack_visual2_og = first
-      console.log("attack_visual2",attack_visual2)
-      console.log(attack_visual2_og)
+    else{      
+      // console.log("attackData2",attackData2)
+      // var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"])
+      // attack_visual2 = second
+      // attack_visual2_og = first
+      // console.log("attack_visual2",attack_visual2)
+      // console.log(attack_visual2_og)
+      let flippedInputs = []
+      for (let idx=0; idx<attackData2["final"].length; idx++)
+      {
+        flippedInputs.push(
+          <div key={idx} style={{ display: "flex", flexWrap: "wrap" }}>
+            <p style={{ padding: "2px", margin: "3px" }}><strong>Flipped input for</strong></p>
+            <TokenSpan key={idx} token={relevantTokens[idx]} />
+            {attackData2["final"][idx].join(" ")}
+            <br />
+          </div>
+        )
+      }
+      attack_visual2 = flippedInputs
+      attack_visual2_og = attackData2["original"].join(" ")      
+
     }
     return (
       
@@ -352,7 +314,7 @@ const Output = ({ attackModel,requestData,responseData,attackData,attackData2,at
             <div className="accordion__arrow" role="presentation"/>
           </AccordionItemTitle>
           <AccordionItemBody>
-            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the question to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                            
+            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                            
                   {attack_visual2 != " " ? <p><strong>Flipped Inputs:</strong> {attack_visual2}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}                      
                   <button
                   type="button"
@@ -385,6 +347,8 @@ const apiUrl = ({model}) => {
     const endpoint = taskEndpoints[selectedModel]
     return `${API_ROOT}/predict/${endpoint}`
 }
+const attackapiUrl = () => `${API_ROOT}/attack/named-entity-recognition`
+const attackapiUrl2 = () => `${API_ROOT}/hotflip/named-entity-recognition`
 
 const modelProps = {apiUrl, attackapiUrl,attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 

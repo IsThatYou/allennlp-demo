@@ -11,10 +11,9 @@ import Model from '../Model'
 import OutputField from '../OutputField'
 import { API_ROOT } from '../../api-config';
 import { truncateText } from '../DemoInput'
-import styled from 'styled-components';
+import{ColorizedToken, postprocessHotflip, postprocessInputReduction} from '../Attack'
 
 const title = "Reading Comprehension"
-//const attackapiUrl = () => `${API_ROOT}/attack/machine-comprehension`
 const description = (
   <span>
     Reading comprehension is the task of answering questions about a passage of text to show that
@@ -79,92 +78,8 @@ const Attention = ({passage_question_attention, question_tokens, passage_tokens}
   }
   return null;
 }
-const ColorizedToken = styled.span`
-  background-color: ${props => props.backgroundColor};
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
-const BlankToken = styled.span`
-  background-color: transparent;
-  color: white;
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
 
-function postprocess(org,data) 
-{
-  let result_string = []
-  let result_string2 = []
-  console.log(org)
-  var obj = ''
-  for (let idx=0; idx<org.length; idx++) {
-    obj = org[idx]
-    
-    if (obj !== data[idx])
-    {
-      console.log(obj,data[idx])
-      result_string.push(
-        <ColorizedToken backgroundColor={"#FF5733"}
-        key={idx}>{obj} </ColorizedToken>)
-        result_string2.push(
-          <ColorizedToken backgroundColor={"#26BD19"}
-          key={idx}>{data[idx]} </ColorizedToken>)
-    }
-    else{
-      result_string.push(
-        <ColorizedToken backgroundColor={"transparent"}
-        key={idx}>{obj} </ColorizedToken>)
-        result_string2.push(
-          <ColorizedToken backgroundColor={"transparent"}
-          key={idx}>{data[idx]} </ColorizedToken>)
-    }
-    
-  }
-  
-  return [result_string,result_string2]
-}
-
-function postprocess2(org,data) 
-{
-  let result_string = []
-  let result_string2 = []  
-  var idx = 0;
-  var idx2 = 0;
-  while (idx2<=data.length){    
-    if (org[idx] == data[idx2]){
-      result_string.push(
-        <ColorizedToken backgroundColor={"transparent"}
-        key={idx}>{org[idx]} </ColorizedToken>);
-      result_string2.push(
-        <ColorizedToken backgroundColor={"transparent"}
-        key={idx}>{data[idx2]} </ColorizedToken>);      
-      idx++;
-      idx2++;
-    }       
-    else {
-      while (idx<=org.length && org[idx] != data[idx2]){
-        result_string.push(
-          <ColorizedToken backgroundColor={"#FF5733"}
-          key={idx}><strike>{org[idx]}</strike> </ColorizedToken>);
-
-        result_string2.push(
-          <BlankToken key={idx}>{org[idx]} </BlankToken>);
-          idx++;            
-      }
-    }
-  }
-  
-  return [result_string,result_string2]
-}
-
-const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData,attackData2, attackModel,attackModel2}) => {
-  console.log("rua",attackData);
-  console.log("rua",attackModel);
-  console.log("requestData", requestData);
+const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData,attackData2, attackModel,attackModel2}) => {  
 
   if(requestData && passage_question_attention && question_tokens && passage_tokens && attackModel) {
     var attack_visual = '';
@@ -175,7 +90,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     attack_visual = " "
   }
   else{    
-    var [first,second] = postprocess2(attackData["original"],attackData["final"][0])    
+    var [first,second] = postprocessInputReduction(attackData["original"],attackData["final"][0])    
     attack_visual = second
     attack_visual_og = first
   }
@@ -184,15 +99,10 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     attack_visual2 = " "
   }
   else{
-    //attack_visual2= attackData2["final"].join(" ")
-    //var original = attackData2["original"]
-    console.log("attackData2",attackData2)
-    var [first,second] = postprocess(attackData2["original"],attackData2["final"][0])
+    var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"][0])
     attack_visual2 = second
-    attack_visual2_og = first
-    console.log(attack_visual2_og)
-  }
-  console.log("rua",attackData);
+    attack_visual2_og = first    
+  }  
   return(
 
    <OutputField>
@@ -301,8 +211,7 @@ const AnswerByType = ({requestData, responseData,attackData,attackData2,attackMo
   if(requestData && responseData) {
     const { passage, question } = requestData;
     const { answer } = responseData;
-    const { answer_type } = answer || {};
-    console.log("muamua",answer_type);
+    const { answer_type } = answer || {};    
     switch(answer_type) {
       case "passage_span": {
         const { spans, value } = answer || {};

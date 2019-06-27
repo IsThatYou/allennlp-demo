@@ -12,6 +12,7 @@ import {
   } from 'react-accessible-accordion';
 import '../../css/TeComponent.css';
 import styled from 'styled-components';
+import{ColorizedToken, postprocessHotflip, postprocessInputReduction} from '../Attack'
 
 const apiUrl = () => `${API_ROOT}/predict/textual-entailment`
 const attackapiUrl = () => `${API_ROOT}/attack/textual-entailment`
@@ -77,46 +78,7 @@ const judgments = {
   ENTAILMENT: <span>the premise <strong>entails</strong> the hypothesis</span>,
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
-const ColorizedToken = styled.span`
-  background-color: ${props => props.backgroundColor};
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
 
-function postprocess(org,data) 
-{
-  let result_string = []
-  let result_string2 = []
-  console.log(org)
-  var obj = ''
-  for (let idx=0; idx<org.length; idx++) {
-    obj = org[idx]
-    
-    if (obj !== data[idx])
-    {
-      console.log(obj,data[idx])
-      result_string.push(
-        <ColorizedToken backgroundColor={"#FF5733"}
-        key={idx}>{obj} </ColorizedToken>)
-        result_string2.push(
-          <ColorizedToken backgroundColor={"#26BD19"}
-          key={idx}>{data[idx]} </ColorizedToken>)
-    }
-    else{
-      result_string.push(
-        <ColorizedToken backgroundColor={"transparent"}
-        key={idx}>{obj} </ColorizedToken>)
-        result_string2.push(
-          <ColorizedToken backgroundColor={"transparent"}
-          key={idx}>{data[idx]} </ColorizedToken>)
-    }
-    
-  }
-  
-  return [result_string,result_string2]
-}
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2}) => {
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
@@ -176,35 +138,24 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
   var attack_visual = '';
   var attack_visual2 = '';
   var attack_visual_og = '';
-  var attack_visual2_og = '';
-  var prediction2 = '';
+  var attack_visual2_og = '';  
   if (attackData === undefined) {
     attack_visual = " "
   }
-  else{
-    attack_visual = attackData["final"][0].join(" ")
-    attack_visual_og = attackData["original"].join(" ")
+  else{    
+    var [first,second] = postprocessInputReduction(attackData["original"],attackData["final"][0])    
+    attack_visual = second
+    attack_visual_og = first
   }
   if (attackData2 === undefined) {
     attack_visual2 = " "
   }
-  else{
-    //attack_visual2= attackData2["final"].join(" ")
-    //var original = attackData2["original"]    
-    var [first,second] = postprocess(attackData2["original"],attackData2["final"][0])
+  else{    
+    var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"][0])
     attack_visual2 = second
-    attack_visual2_og = first    
-    if (attackData2['label'] == "0"){
-      prediction2 = "Entailment";
-    }
-    else if (attackData2['label'] == "1"){
-      prediction2 = "Contradiction";
-    }
-    else if (attackData2['label'] == "2"){
-      prediction2 = "Neutral";
-    }      
+    attack_visual2_og = first        
   }
-  console.log("rua",attackData);
+
   return (
   <div className="model__content answer">
     <OutputField label="Summary">
@@ -239,8 +190,6 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     </div>
     <OutputField>
       <Accordion accordion={false}>
-
-
        <AccordionItem expanded={true}>
           <AccordionItemTitle>
             Input Reduction
@@ -268,8 +217,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
           <AccordionItemBody>            
             <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the Hypothesis to change the model's prediction. We iteratively flip the word in the Hypothesis with the highest gradient until the prediction changes.</p>                                
             {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}    
-            {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
-            {attack_visual2 != " " ? <p><strong>New Prediction:</strong> {prediction2}</p> : <p></p>}      
+            {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}                      
                 <button
                   type="button"
                   className="btn"
