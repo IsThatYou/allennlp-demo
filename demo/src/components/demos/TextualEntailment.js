@@ -2,6 +2,7 @@ import React from 'react';
 import { API_ROOT } from '../../api-config';
 import { withRouter } from 'react-router-dom';
 import HeatMap from '../HeatMap'
+import TextSaliencyMap from '../Interpretation'
 import Model from '../Model'
 import OutputField from '../OutputField'
 import {
@@ -12,12 +13,18 @@ import {
   } from 'react-accessible-accordion';
 import '../../css/TeComponent.css';
 import styled from 'styled-components';
-import{ColorizedToken, postprocessHotflip, postprocessInputReduction} from '../Attack'
+import{postprocessHotflip, postprocessInputReduction} from '../Attack'
 
 const apiUrl = () => `${API_ROOT}/predict/textual-entailment`
 const attackapiUrl = () => `${API_ROOT}/attack/textual-entailment`
 const attackapiUrl2 = () => `${API_ROOT}/hotflip/textual-entailment`
+const apiUrlInterpret = ({interpreter}) => `${API_ROOT}/interpret/textual-entailment/${interpreter}`
+
 const title = "Textual Entailment"
+
+// Interpreters
+const IG_INTERPRETER = 'integrated_gradients_interpreter'
+const GRAD_INTERPRETER = 'simple_gradients_interpreter'
 
 const description = (
   <span>
@@ -79,55 +86,99 @@ const judgments = {
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
 
-const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2}) => {
+const getTokenWeightPairs = (premiseGrads, hypothesisGrads, premise_tokens, hypothesis_tokens) => {
+
+  // We do 1 - weight to get the colormap scaling right
+  const premiseTokensWithWeights = premise_tokens.map((token, idx) => {
+    let weight = premiseGrads[idx]
+    return { token, weight: 1 - weight }
+  })
+
+  // We do 1 - weight to get the colormap scaling right
+  const hypothesisTokensWithWeights = hypothesis_tokens.map((token, idx) => {
+    let weight = hypothesisGrads[idx]
+    return { token, weight: 1 - weight }
+  })
+
+  return [premiseTokensWithWeights, hypothesisTokensWithWeights]
+}
+
+const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
+  const { simple_gradients_interpreter, integrated_gradients_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined} 
 
-  // Find judgment and confidence.
-  let judgment
-  let confidence
+  let gradientPremiseTokensWithWeights = []
+  let gradientHypothesisTokensWithWeights = []
 
-  if (entailment > contradiction && entailment > neutral) {
-    judgment = judgments.ENTAILMENT
-    confidence = entailment
-  }
-  else if (contradiction > entailment && contradiction > neutral) {
-    judgment = judgments.CONTRADICTION
-    confidence = contradiction
-  }
-  else if (neutral > entailment && neutral > contradiction) {
-    judgment = judgments.NEUTRAL
-    confidence = neutral
-  } else {
-    throw new Error("cannot form judgment")
+  let igPremiseTokensWithWeights = []
+  let igHypothesisTokensWithWeights = []
+
+  if (simple_gradients_interpreter) {
+    const { instance_1 } = simple_gradients_interpreter
+    const { grad_input_1, grad_input_2 } = instance_1 
+
+    const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
+    gradientPremiseTokensWithWeights = tokensWithWeights[0]
+    gradientHypothesisTokensWithWeights = tokensWithWeights[1]
   }
 
-  // Create summary text.
-  const veryConfident = 0.75;
-  const somewhatConfident = 0.50;
-  let summaryText
+  if (integrated_gradients_interpreter) {
+    const { instance_1 } = integrated_gradients_interpreter
+    const { grad_input_1, grad_input_2 } = instance_1 
 
-  if (confidence >= veryConfident) {
-    summaryText = (
-      <div>
-        It is <strong>very likely</strong> that {judgment}.
-      </div>
-    )
-  } else if (confidence >= somewhatConfident) {
-    summaryText = (
-      <div>
-        It is <strong>somewhat likely</strong> that {judgment}.
-      </div>
-    )
-  } else {
-    summaryText = (
-      <div>The model is not confident in its judgment.</div>
+    const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
+    igPremiseTokensWithWeights = tokensWithWeights[0]
+    igHypothesisTokensWithWeights = tokensWithWeights[1]
+  }
+  
+    // request data contains {premise: "...", hypothesis: "..."} just as we would expect 
+
+    // Find judgment and confidence.
+    let judgment
+    let confidence
+
+    if (entailment > contradiction && entailment > neutral) {
+      judgment = judgments.ENTAILMENT
+      confidence = entailment
+    }
+    else if (contradiction > entailment && contradiction > neutral) {
+      judgment = judgments.CONTRADICTION
+      confidence = contradiction
+    }
+    else if (neutral > entailment && neutral > contradiction) {
+      judgment = judgments.NEUTRAL
+      confidence = neutral
+    } else {
+      throw new Error("cannot form judgment")
+    }
+
+    // Create summary text.
+    const veryConfident = 0.75;
+    const somewhatConfident = 0.50;
+    let summaryText
+
+    if (confidence >= veryConfident) {
+      summaryText = (
+        <div>
+          It is <strong>very likely</strong> that {judgment}.
+        </div>
       )
-  }
+    } else if (confidence >= somewhatConfident) {
+      summaryText = (
+        <div>
+          It is <strong>somewhat likely</strong> that {judgment}.
+        </div>
+      )
+    } else {
+      summaryText = (
+        <div>The model is not confident in its judgment.</div>
+        )
+    }
 
-  function formatProb(n) {
-  return parseFloat((n * 100).toFixed(1)) + "%";
-  }
+    function formatProb(n) {
+      return parseFloat((n * 100).toFixed(1)) + "%";
+    }
 
   // https://en.wikipedia.org/wiki/Ternary_plot#Plotting_a_ternary_plot
   const a = contradiction;
@@ -227,10 +278,44 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 
           </AccordionItemBody>
         </AccordionItem>
-
-
-
+          
         <AccordionItem expanded={true}>
+          <AccordionItemTitle>
+            Simple Gradients Interpretation
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+            <p> See saliency map interpretations generated by <a href="https://arxiv.org/abs/1312.6034" target="_blank">visualizing the gradient</a>. </p>
+            <p><strong>Saliency Map for Premise:</strong></p>
+            {gradientPremiseTokensWithWeights.length !== 0 ? <TextSaliencyMap tokensWithWeights={gradientPremiseTokensWithWeights} colormapProps={{colormap: 'copper', format: 'hex', nshades: 20}} /> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the premise interpretation.</p>}
+                                                                                         
+            <p><strong>Saliency Map for Hypothesis:</strong></p>
+            {gradientHypothesisTokensWithWeights.length !== 0 ? <TextSaliencyMap tokensWithWeights={gradientHypothesisTokensWithWeights} colormapProps={{colormap: 'copper', format: 'hex', nshades: 20}} /> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the hypothesis interpretation.</p>}
+                                                                                            
+            <button type="button" className="btn" style={{margin: "30px 0px"}} onClick={ () => interpretModel(requestData, GRAD_INTERPRETER) }>Interpret Prediction
+            </button>
+          </AccordionItemBody>
+        </AccordionItem>
+        
+        <AccordionItem expanded={false}>
+          <AccordionItemTitle>
+            Integrated Gradients Interpretation Visualization
+            <div className="accordion__arrow" role="presentation"/>
+          </AccordionItemTitle>
+          <AccordionItemBody>
+          <p> See saliency map interpretations generated using <a href="https://arxiv.org/abs/1703.01365" target="_blank">Integrated Gradients</a>. </p>
+            <p><strong>Saliency Map for Premise:</strong></p>
+            {igPremiseTokensWithWeights.length !== 0 ? <TextSaliencyMap tokensWithWeights={igPremiseTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} /> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the premise interpretation</p>}
+                                                                                         
+            <p><strong>Saliency Map for Hypothesis:</strong></p>
+            {igHypothesisTokensWithWeights.length !== 0 ? <TextSaliencyMap tokensWithWeights={igHypothesisTokensWithWeights} colormapProps={{colormap: 'copper', format: 'hex',nshades: 20}} /> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the hypothesis interpretation.</p>}
+                                                                                            
+            <button type="button" className="btn" style={{margin: "30px 0px"}} onClick={ () => interpretModel(requestData, IG_INTERPRETER) }>Interpret Prediction
+            </button>
+          </AccordionItemBody>
+        </AccordionItem>
+
+        <AccordionItem expanded={false}>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
             <div className="accordion__arrow" role="presentation"/>
@@ -256,9 +341,10 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
             <HeatMap colLabels={hypothesis_tokens} rowLabels={premise_tokens} data={p2h_attention} />
           </AccordionItemBody>
         </AccordionItem>
-      </Accordion>
-    </OutputField>
-  </div>
+        
+        </Accordion>
+      </OutputField>
+    </div>
   );
 }
 
@@ -285,6 +371,8 @@ const examples = [
   },
 ]
 
-const modelProps = {apiUrl, attackapiUrl, attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
+const modelProps = {apiUrl, apiUrlInterpret, attackapiUrl, attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 
+// withRouter will pass updated match, location, and history props to the wrapped
+// component 
 export default withRouter(props => <Model {...props} {...modelProps}/>)

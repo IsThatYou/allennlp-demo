@@ -104,6 +104,8 @@ class DemoInput extends React.Component {
 
         // for radio input, the second param is simply the value
         this.handleRadioInputChange = fieldName => value => {
+            console.log('field name', fieldName)
+            console.log('value', value)
             let stateUpdate = {}
             stateUpdate[fieldName] = value;
             this.setState(stateUpdate)

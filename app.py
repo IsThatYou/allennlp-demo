@@ -26,6 +26,7 @@ import pytz
 from allennlp.common.util import JsonDict, peak_memory_mb
 from allennlp.predictors import Predictor
 from allennlp.attack import Attacker
+from allennlp.interpretation import Interpreter
 
 from server.permalinks import int_to_slug, slug_to_int
 from server.db import DemoDatabase, PostgresDemoDatabase
@@ -99,27 +100,30 @@ def make_app(build_dir: str = None,
 
     app.predictors = {}
     app.attackers = defaultdict(dict)
+    app.interpreters = defaultdict(dict)
     app.max_request_lengths = {}
     app.wsgi_app = ProxyFix(app.wsgi_app) # sets the requester IP with the X-Forwarded-For header
 
     for name, demo_model in models.items():
         logger.info(f"loading {name} model")
         #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
-        # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):
-        #if (name == "named-entity-recognition"):            
-        if (name == "sentiment-analysis"):            
-            print(name)
+        # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
+        if name == "textual-entailment":                        
+            logger.info(f"loading {name} model")
             predictor = demo_model.predictor()
+            app.predictors[name] = predictor
+            app.max_request_lengths[name] = demo_model.max_request_length                        
             
             attacker = Attacker.by_name("pathologies")(predictor)
-            app.attackers[name]["pathologies"] = attacker
-            
+            app.attackers[name]["pathologies"] = attacker            
             attacker2 = Attacker.by_name("hotflip")(predictor)
             app.attackers[name]["hotflip"] = attacker2
 
-            app.predictors[name] = predictor
-            app.max_request_lengths[name] = demo_model.max_request_length                        
-
+            simple_gradients_interpreter = Interpreter.by_name('simple-gradients-interpreter')(predictor)
+            integrated_gradients_interpreter = Interpreter.by_name('integrated-gradients-interpreter')(predictor)            
+            app.interpreters[name]['simple-gradients-interpreter'] = simple_gradients_interpreter
+            app.interpreters[name]['integrated-gradients-interpreter'] = integrated_gradients_interpreter
+            
     @app.errorhandler(ServerError)
     def handle_invalid_usage(error: ServerError) -> Response:  # pylint: disable=unused-variable
         response = jsonify(error.to_dict())
@@ -198,7 +202,7 @@ def make_app(build_dir: str = None,
         
         attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
         return jsonify(attack)
-
+        
     @app.route('/hotflip/<model_name>', methods=['POST','OPTIONS'])
     def hotflip(model_name: str) -> Response:
         """make a prediction using the specified model and return the results"""
@@ -222,6 +226,41 @@ def make_app(build_dir: str = None,
         
         attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
         return jsonify(attack)
+
+    @app.route('/interpret/<model_name>/<interpreter>', methods=['POST', 'OPTIONS'])
+    def interpret(model_name: str, interpreter: str) -> Response: 
+        """
+        Interpret prediction of the model
+        """
+        if request.method == "OPTIONS":
+            return Response(response="", status=200)
+        lowered_model_name = model_name.lower()
+
+
+        if interpreter == 'simple_gradients_interpreter':
+            interpreter = 'simple-gradients-interpreter'
+        elif interpreter == 'integrated_gradients_interpreter':
+            interpreter = 'integrated-gradients-interpreter'
+
+        model = app.interpreters.get(lowered_model_name)[interpreter]
+
+        if model is None:
+            raise ServerError("unknown model: {}".format(model_name), status_code=400)
+        max_request_length = app.max_request_lengths[lowered_model_name]
+
+        print(request)
+        data = request.get_json()
+        print("THE DATA", data)
+
+        serialized_request = json.dumps(data)
+        if len(serialized_request) > max_request_length:
+            raise ServerError(f"Max request length exceeded for model {model_name}! " +
+                              f"Max: {max_request_length} Actual: {len(serialized_request)}")
+
+        interpretation = model.interpret_from_json(data)
+
+        return jsonify(interpretation)
+
 
     @app.route('/predict/<model_name>', methods=['POST', 'OPTIONS'])
     def predict(model_name: str) -> Response:  # pylint: disable=unused-variable

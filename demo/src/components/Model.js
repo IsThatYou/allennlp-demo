@@ -6,21 +6,24 @@ class Model extends React.Component {
     constructor(props) {
       super(props);
 
-      const { requestData, responseData, attackData } = props;
+      const { requestData, responseData, interpretData, attackData } = props;
 
       this.state = {
         outputState: responseData ? "received" : "empty", // valid values: "working", "empty", "received", "error"
         requestData: requestData,
         responseData: responseData,
-        attackData: attackData
+        attackData: attackData,
+        interpretData: interpretData
       };
 
       this.runModel = this.runModel.bind(this)
       this.attackModel = this.attackModel.bind(this)
-      this.attackModel2 = this.attackModel2.bind(this)
+      this.attackModel2 = this.attackModel2.bind(this)      
+      this.interpretModel = this.interpretModel.bind(this)
     }
 
     runModel(inputs) {
+      console.log('inputs', inputs)
       const { selectedModel, apiUrl } = this.props
 
       this.setState({outputState: "working"});
@@ -50,6 +53,29 @@ class Model extends React.Component {
         this.setState({outputState: "error"});
         console.error(error);
       });
+    }
+
+    interpretModel(inputs, interpreter) {
+      console.log('interpreter', Object.assign(inputs, {interpreter}))
+      const { apiUrlInterpret } = this.props
+
+      fetch(apiUrlInterpret(Object.assign(inputs, {interpreter})), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inputs)
+      }).then((response) => {
+        return response.json();
+      }).then((json) => {
+        console.log(json)
+        let stateUpdate = Object.assign({}, this.state)
+        console.log('STATE UPDATE 1', stateUpdate['interpretData'])
+        stateUpdate['interpretData'] = Object.assign({}, { [interpreter]: json }, stateUpdate['interpretData'])
+        console.log('STATE UPDATE', stateUpdate)
+        this.setState(stateUpdate)
+      })
     }
 
     attackModel(inputs) {
@@ -88,12 +114,9 @@ class Model extends React.Component {
       });
     }
 
-
-
-    render() {
+ render() {
         const { title, description, descriptionEllipsed, examples, fields, selectedModel, vertical, Output } = this.props;
         const { requestData, responseData, outputState } = this.state;
-
         const demoInput = <DemoInput selectedModel={selectedModel}
                                      title={title}
                                      description={description}
@@ -105,7 +128,7 @@ class Model extends React.Component {
                                      outputState={outputState}
                                      runModel={this.runModel}/>
 
-        const demoOutput = requestData && responseData ? <Output {...this.state} attackModel={this.attackModel} attackModel2={this.attackModel2}/> : null
+        const demoOutput = requestData && responseData ? <Output {...this.state} interpretModel={this.interpretModel} attackModel={this.attackModel} attackModel2={this.attackModel2}/> : null        
         let className, InputPane, OutputPane
         if (vertical) {
           className = "pane model"
@@ -125,5 +148,6 @@ class Model extends React.Component {
         )
     }
 }
+
 
 export default Model

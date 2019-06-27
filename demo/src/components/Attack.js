@@ -1,17 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ColorizedToken } from './Shared';
 
 const BlankToken = styled.span`
   background-color: transparent;
   color: white;
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
-
-const ColorizedToken = styled.span`
-  background-color: ${props => props.backgroundColor};
   padding: 1px;
   margin: 1px;
   display: inline-block;
