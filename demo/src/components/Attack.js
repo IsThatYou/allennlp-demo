@@ -74,27 +74,3 @@ export function postprocessInputReduction(org,data){
   
   return [result_string,result_string2]
 }
-
-export function postprocessAttack(attackData, attackData2){
-  var attack_visual = '';
-    var attack_visual2 = '';
-    var attack_visual_og = '';
-    var attack_visual2_og = '';  
-    if (attackData === undefined) {
-      attack_visual = " "
-    }
-    else{    
-      var [first,second] = postprocessInputReduction(attackData["original"],attackData["final"][0])    
-      attack_visual = second
-      attack_visual_og = first
-    }
-    if (attackData2 === undefined) {
-      attack_visual2 = " "
-    }
-    else{
-      var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"][0])
-      attack_visual2 = second
-      attack_visual2_og = first        
-    }  
-    return [attack_visual, attack_visual_og, attack_visual2, attack_visual2_og]
-}  

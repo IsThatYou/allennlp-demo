@@ -1,6 +1,6 @@
 import React from 'react';
 import HeatMap from '../HeatMap'
-import TextSaliencyMap from '../Interpretation'
+import InterpretationComponent from '../Interpretation'
 import { withRouter } from 'react-router-dom';
 import {
   Accordion,
@@ -230,9 +230,9 @@ const generateInterpretation = (requestData,
     <OutputField>
       <Accordion accordion={false}>
                    
-        <TextSaliencyMap premTokensWithWeights={gradientPassageTokensWithWeights} hypoTokensWithWeights={gradientQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
+        <InterpretationComponent premTokensWithWeights={gradientPassageTokensWithWeights} hypoTokensWithWeights={gradientQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
 
-        <TextSaliencyMap premTokensWithWeights={igPassageTokensWithWeights} hypoTokensWithWeights={igQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
+        <InterpretationComponent premTokensWithWeights={igPassageTokensWithWeights} hypoTokensWithWeights={igQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
 
       </Accordion>
     </OutputField>

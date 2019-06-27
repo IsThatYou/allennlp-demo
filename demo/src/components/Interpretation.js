@@ -8,7 +8,7 @@ import {
   AccordionItemBody,
   } from 'react-accessible-accordion';
 
-export default class TextSaliencyMap extends React.Component {
+export default class InterpretationComponent extends React.Component {
   constructor(props) {
     super(props)
 

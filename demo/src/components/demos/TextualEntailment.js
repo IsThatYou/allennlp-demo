@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import HeatMap from '../HeatMap'
 import InputReductionItem from '../InputReduction'
 import HotflipItem from '../Hotflip'
-import TextSaliencyMap from '../Interpretation'
+import InterpretationComponent from '../Interpretation'
 import Model from '../Model'
 import OutputField from '../OutputField'
 import {
@@ -226,9 +226,9 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                    
            
-        <TextSaliencyMap premTokensWithWeights={gradientPremiseTokensWithWeights} hypoTokensWithWeights={gradientHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
+        <InterpretationComponent premTokensWithWeights={gradientPremiseTokensWithWeights} hypoTokensWithWeights={gradientHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
 
-        <TextSaliencyMap premTokensWithWeights={igPremiseTokensWithWeights} hypoTokensWithWeights={igHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
+        <InterpretationComponent premTokensWithWeights={igPremiseTokensWithWeights} hypoTokensWithWeights={igHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
       
         <AccordionItem expanded={false}>
           <AccordionItemTitle>
@@ -288,6 +288,4 @@ const examples = [
 
 const modelProps = {apiUrl, apiUrlInterpret, attackapiUrl, attackapiUrl2,title, description, descriptionEllipsed, fields, examples, Output}
 
-// withRouter will pass updated match, location, and history props to the wrapped
-// component 
 export default withRouter(props => <Model {...props} {...modelProps}/>)
