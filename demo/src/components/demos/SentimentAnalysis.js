@@ -37,7 +37,7 @@ const fields = [
   
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2}) => {
     var returnVal = "";
-    if (responseData['probs'][1] < responseData['probs'][0]){    
+    if (responseData['class_probabilities'][1] < responseData['class_probabilities'][0]){    
         returnVal = "Positive";
     }
     else{

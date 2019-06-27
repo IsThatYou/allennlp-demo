@@ -53,7 +53,7 @@ MODELS = {
                 19681
         ),
         'textual-entailment': DemoModel(
-                'decomposable-attention-2017.09.04.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/decomposable-attention-2017.09.04.tar.gz',
                 'textual-entailment',
                 13129
         ),
@@ -63,7 +63,7 @@ MODELS = {
                 21097
         ),
         'named-entity-recognition': DemoModel(
-                'ner-model-2018.12.18.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/ner-model-2018.12.18.tar.gz',
                 'sentence-tagger',
                 94864
         ),
@@ -103,7 +103,7 @@ MODELS = {
                 2236
         ),
         'sentiment-analysis': DemoModel(
-                'sst-5-elmo-biattentive-classification-network-2018.09.04.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/sst-2-elmo-biattentive-classification-network-2019.06.26.tar.gz',                
                 'sentiment-analysis',
                 1000
         ),        
