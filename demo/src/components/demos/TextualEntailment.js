@@ -223,8 +223,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     <OutputField>
       <Accordion accordion={false}>
        
-        <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                    
-           
+        <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                    
            
         <TextSaliencyMap premTokensWithWeights={gradientPremiseTokensWithWeights} hypoTokensWithWeights={gradientHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />

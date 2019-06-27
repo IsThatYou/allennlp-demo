@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import{postprocessHotflip} from './Attack'
+import {postprocessHotflip} from './Attack'
 import {  
   AccordionItem,
   AccordionItemTitle,
