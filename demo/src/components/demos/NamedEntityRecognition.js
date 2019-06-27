@@ -183,6 +183,7 @@ const ColorizedToken = styled.span`
   display: inline-block;
   border-radius: 3px;
 `;
+
 function postprocess(org,perturbed_data) 
 {
   let result_string = []
@@ -215,7 +216,7 @@ function postprocess(org,perturbed_data)
       
     }
     result_string3.push(result_string2)
-}
+  }
   
   return [result_string,result_string3]
 }
