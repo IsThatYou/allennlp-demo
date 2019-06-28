@@ -6,12 +6,12 @@ import { Accordion } from 'react-accessible-accordion';
 import OutputField from '../OutputField'
 import HotflipItem from '../Hotflip'
 import InputReductionItem from '../InputReduction'
-import TextSaliencyMap from '../Interpretation'
+import InterpretationSingleInput from '../InterpretationSingleInput'
 
 const apiUrl = () => `${API_ROOT}/predict/sentiment-analysis`
 const attackapiUrl = () => `${API_ROOT}/attack/sentiment-analysis`
 const attackapiUrl2 = () => `${API_ROOT}/hotflip/sentiment-analysis`
-const apiUrlInterpret = ({interpreter}) => `${API_ROOT}/interpret/textual-entailment/${interpreter}`
+const apiUrlInterpret = ({interpreter}) => `${API_ROOT}/interpret/sentiment-analysis/${interpreter}`
 
 const title = "Sentiment Analysis"
 
@@ -32,8 +32,10 @@ const fields = [
    placeholder: 'E.g. "This movie is amazing"'}
 ]
   
-const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2}) => {
+const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
     var returnVal = "";
+    const{ tokens } = requestData;    
+
     if (responseData['class_probabilities'][1] < responseData['class_probabilities'][0]){    
         returnVal = "Positive";
     }
@@ -50,7 +52,13 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     <OutputField>  
     <Accordion accordion={false}>        
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
-        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                                       
+
+        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
+
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
+      
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
+
       </Accordion>
     </OutputField>
   </div>

@@ -108,7 +108,10 @@ def make_app(build_dir: str = None,
         logger.info(f"loading {name} model")
         #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
         # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
-        if name == "textual-entailment":                        
+        #if name == "machine-comprehension":                        
+        #if name == "textual-entailment":                        
+        #if name == "named-entity-recognition":                        
+        if name == "sentiment-analysis":                        
             logger.info(f"loading {name} model")
             predictor = demo_model.predictor()
             app.predictors[name] = predictor
@@ -198,7 +201,7 @@ def make_app(build_dir: str = None,
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
         temp = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
-        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1","tokens":"grad_input_1"}
+        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
         
         attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
         return jsonify(attack)
@@ -222,7 +225,7 @@ def make_app(build_dir: str = None,
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
         temp = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
-        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1","tokens":"grad_input_1"}
+        temp2 = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
         
         attack = model.attack_from_json(data,temp[lowered_model_name],temp2[temp[lowered_model_name]])
         return jsonify(attack)

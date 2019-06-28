@@ -9,21 +9,13 @@ import {
   } from 'react-accessible-accordion';
 
 
-const getTokenWeightPairs = (premiseGrads, hypothesisGrads, premise_tokens, hypothesis_tokens) => {
-
+const getTokenWeightPairs = (grads, tokens) => {
   // We do 1 - weight to get the colormap scaling right
-  const premiseTokensWithWeights = premise_tokens.map((token, idx) => {
-    let weight = premiseGrads[idx]
+  const tokensWithWeights = tokens.map((token, idx) => {
+    let weight = grads[idx]
     return { token, weight: 1 - weight }
-  })
-
-  // We do 1 - weight to get the colormap scaling right
-  const hypothesisTokensWithWeights = hypothesis_tokens.map((token, idx) => {
-    let weight = hypothesisGrads[idx]
-    return { token, weight: 1 - weight }
-  })
-
-  return [premiseTokensWithWeights, hypothesisTokensWithWeights]
+  })  
+  return tokensWithWeights
 }
 
 export default class InterpretationComponent extends React.Component {
@@ -31,13 +23,11 @@ export default class InterpretationComponent extends React.Component {
     super(props)
 
     this.state = {
-      premtopK: 3,
-      hypotopK: 3
+      topK: 3      
     }
 
     this.colorize = this.colorize.bind(this)
-    this.handlePremTopKChange = this.handlePremTopKChange.bind(this)
-    this.handleHypoTopKChange = this.handleHypoTopKChange.bind(this)
+    this.handleTopKChange = this.handleTopKChange.bind(this)    
     this.getTopKIndices = this.getTopKIndices.bind(this)
   }
 
@@ -72,28 +62,18 @@ export default class InterpretationComponent extends React.Component {
     return result_string 
   }
 
-  handlePremTopKChange = e => {
+  handleTopKChange = e => {
     let stateUpdate = Object.assign({}, this.state)
     console.log('state updatessss', stateUpdate)
     if (e.target.value.trim() === "") {
-      stateUpdate['premtopK'] = e.target.value    
+      stateUpdate['topK'] = e.target.value    
     } else {
-      stateUpdate['premtopK'] = parseInt(e.target.value, 10)      
+      stateUpdate['topK'] = parseInt(e.target.value, 10)      
     }
     this.setState(stateUpdate)
-  }
-  handleHypoTopKChange = e => {
-    let stateUpdate = Object.assign({}, this.state)
-    console.log('state updatessss', stateUpdate)
-    if (e.target.value.trim() === "") {
-      stateUpdate['hypotopK'] = e.target.value
-    } else {
-      stateUpdate['hypotopK'] = parseInt(e.target.value, 10)
-    }
-    this.setState(stateUpdate)
-  }
+  } 
 
-  getTopKIndices(tokensWithWeights, use_prem) {
+  getTopKIndices(tokensWithWeights) {
     function grad_compare(obj1, obj2) {
       return obj1.weight - obj2.weight
     }
@@ -103,20 +83,14 @@ export default class InterpretationComponent extends React.Component {
     
     indexedTokens.sort(grad_compare)
   
-    // Extract top K tokens and return only the indices of the top tokens
-    if (use_prem){
-      const topKTokens = indexedTokens.slice(0, this.state.premtopK)
-      return topKTokens.map(obj => obj.idx)
-    }
-    else{
-      const topKTokens = indexedTokens.slice(0, this.state.hypotopK) 
-      return topKTokens.map(obj => obj.idx)
-    }  
+    // Extract top K tokens and return only the indices of the top tokens    
+    const topKTokens = indexedTokens.slice(0, this.state.topK) 
+    return topKTokens.map(obj => obj.idx)    
   }
 
   render() {
     console.log("RENDERING")
-    const { interpretData, premise_tokens, hypothesis_tokens, interpretModel, requestData, interpreter } = this.props 
+    const { interpretData, tokens, interpretModel, requestData, interpreter } = this.props 
 
     const GRAD_INTERPRETER = 'simple_gradients_interpreter'
     const IG_INTERPRETER = 'integrated_gradients_interpreter'    
@@ -134,31 +108,26 @@ export default class InterpretationComponent extends React.Component {
 
     const { simple_gradients_interpreter, integrated_gradients_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined} 
 
-    let premTokensWithWeights = []
-    let hypoTokensWithWeights = []    
+    let tokensWithWeights = []    
     
     if (simple_gradients_interpreter) {
       const { instance_1 } = simple_gradients_interpreter
-      const { grad_input_1, grad_input_2 } = instance_1 
+      const { grad_input_1 } = instance_1 
 
-      const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
-      premTokensWithWeights = tokensWithWeights[0]
-      hypoTokensWithWeights = tokensWithWeights[1]      
+      const tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)
+      tokensWithWeights = tokensWithWeights[0]        
     }
 
     if (integrated_gradients_interpreter) {
       const { instance_1 } = integrated_gradients_interpreter
-      const { grad_input_1, grad_input_2 } = instance_1 
+      const { grad_input_1 } = instance_1 
 
-      const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
-      premTokensWithWeights = tokensWithWeights[0]
-      hypoTokensWithWeights = tokensWithWeights[1]      
+      const tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)
+      tokensWithWeights = tokensWithWeights[0]     
     }
     
-    const premtopKIdx = new Set(this.getTopKIndices(premTokensWithWeights, true))
-    const hypoKIdx = new Set(this.getTopKIndices(hypoTokensWithWeights, false))
-    const prem_token_color_map = this.colorize(premTokensWithWeights, premtopKIdx)
-    const hypo_token_color_map = this.colorize(hypoTokensWithWeights, hypoKIdx)
+    const topKIdx = new Set(this.getTopKIndices(tokensWithWeights, true))        
+    const token_color_map = this.colorize(tokensWithWeights, topKIdx)
             
     return (
       <div>
@@ -170,11 +139,11 @@ export default class InterpretationComponent extends React.Component {
           <AccordionItemBody>
             <div className="content" dangerouslySetInnerHTML={{__html: title2}}></div>            
             <p><strong>Saliency Map:</strong></p>
-            {premTokensWithWeights.length !== 0 ? <div>{prem_token_color_map} <Tooltip /> <input type="range" min={0} max={prem_token_color_map.length} step="1" value={this.state.premtopK} className="slider" onChange={this.handlePremTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the interpretation.</p>}
+            {tokensWithWeights.length !== 0 ? <div>{token_color_map} <Tooltip /> <input type="range" min={0} max={token_color_map.length} step="1" value={this.state.topK} className="slider" onChange={this.handleTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p style={{color: "#000000"}}>Press "interpret prediction" to show the interpretation.</p>}
                                    
             <p><strong>Saliency Map:</strong></p>                                                                
-            {hypoTokensWithWeights.length !== 0 ? <div>{hypo_token_color_map} <Tooltip /> <input type="range" min={0} max={hypo_token_color_map.length} step="1" value={this.state.hypotopK} className="slider"
-            onChange={this.handleHypoTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p></p>}
+            {tokensWithWeights.length !== 0 ? <div>{token_color_map} <Tooltip /> <input type="range" min={0} max={token_color_map.length} step="1" value={this.state.topK} className="slider"
+            onChange={this.handleTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p></p>}
             <button type="button" className="btn" style={{margin: "30px 0px"}} onClick={() => interpretModel(requestData, interpreter)}>Interpret Prediction
             </button>
           </AccordionItemBody>

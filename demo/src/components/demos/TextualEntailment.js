@@ -23,7 +23,6 @@ const apiUrlInterpret = ({interpreter}) => `${API_ROOT}/interpret/textual-entail
 
 const title = "Textual Entailment"
 
-// Interpreters
 const IG_INTERPRETER = 'integrated_gradients_interpreter'
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
 
@@ -87,52 +86,10 @@ const judgments = {
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
 
-const getTokenWeightPairs = (premiseGrads, hypothesisGrads, premise_tokens, hypothesis_tokens) => {
-
-  // We do 1 - weight to get the colormap scaling right
-  const premiseTokensWithWeights = premise_tokens.map((token, idx) => {
-    let weight = premiseGrads[idx]
-    return { token, weight: 1 - weight }
-  })
-
-  // We do 1 - weight to get the colormap scaling right
-  const hypothesisTokensWithWeights = hypothesis_tokens.map((token, idx) => {
-    let weight = hypothesisGrads[idx]
-    return { token, weight: 1 - weight }
-  })
-
-  return [premiseTokensWithWeights, hypothesisTokensWithWeights]
-}
-
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
-  const { simple_gradients_interpreter, integrated_gradients_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined} 
 
-  let gradientPremiseTokensWithWeights = []
-  let gradientHypothesisTokensWithWeights = []
-
-  let igPremiseTokensWithWeights = []
-  let igHypothesisTokensWithWeights = []
-
-  if (simple_gradients_interpreter) {
-    const { instance_1 } = simple_gradients_interpreter
-    const { grad_input_1, grad_input_2 } = instance_1 
-
-    const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
-    gradientPremiseTokensWithWeights = tokensWithWeights[0]
-    gradientHypothesisTokensWithWeights = tokensWithWeights[1]
-  }
-
-  if (integrated_gradients_interpreter) {
-    const { instance_1 } = integrated_gradients_interpreter
-    const { grad_input_1, grad_input_2 } = instance_1 
-
-    const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
-    igPremiseTokensWithWeights = tokensWithWeights[0]
-    igHypothesisTokensWithWeights = tokensWithWeights[1]
-  }
-  
     // request data contains {premise: "...", hypothesis: "..."} just as we would expect 
 
     // Find judgment and confidence.
@@ -225,11 +182,11 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
        
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                    
-           
-        <InterpretationComponent premTokensWithWeights={gradientPremiseTokensWithWeights} hypoTokensWithWeights={gradientHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
 
-        <InterpretationComponent premTokensWithWeights={igPremiseTokensWithWeights} hypoTokensWithWeights={igHypothesisTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
       
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
+
         <AccordionItem expanded={false}>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
