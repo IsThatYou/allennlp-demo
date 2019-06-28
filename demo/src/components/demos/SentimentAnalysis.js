@@ -36,7 +36,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     var returnVal = "";    
     const{ tokens } = requestData;    
 
-    if (responseData['class_probabilities'][1] < responseData['class_probabilities'][0]){    
+    if (responseData['probs'][1] < responseData['probs'][0]){    
         returnVal = "Positive";
     }
     else{

@@ -25,6 +25,7 @@ const title = "Textual Entailment"
 
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
 const IG_INTERPRETER = 'integrated_gradients_interpreter'
+const SG_INTERPRETER = 'smooth_gradient_interpreter'
 
 const description = (
   <span>
@@ -86,7 +87,7 @@ const judgments = {
   NEUTRAL: <span>there is <strong>no correlation</strong> between the premise and hypothesis</span>
 }
 
-const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
+const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {  
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
 
@@ -186,7 +187,9 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
       
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
-  
+
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>   
+
         <AccordionItem expanded={false}>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
