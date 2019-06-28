@@ -108,10 +108,9 @@ def make_app(build_dir: str = None,
         logger.info(f"loading {name} model")
         #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
         # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
-        #if name == "machine-comprehension":                        
-        #if name == "textual-entailment":                        
+        if name == "textual-entailment":                                
         #if name == "named-entity-recognition":                        
-        if name == "sentiment-analysis":                        
+        #if name == "sentiment-analysis":                        
             logger.info(f"loading {name} model")
             predictor = demo_model.predictor()
             app.predictors[name] = predictor
@@ -123,9 +122,12 @@ def make_app(build_dir: str = None,
             app.attackers[name]["hotflip"] = attacker2
 
             simple_gradients_interpreter = Interpreter.by_name('simple-gradients-interpreter')(predictor)
-            integrated_gradients_interpreter = Interpreter.by_name('integrated-gradients-interpreter')(predictor)            
+            integrated_gradients_interpreter = Interpreter.by_name('integrated-gradients-interpreter')(predictor)
+            smooth_gradient_interpreter = Interpreter.by_name('smooth-gradient-interpreter')(predictor)
+
             app.interpreters[name]['simple-gradients-interpreter'] = simple_gradients_interpreter
             app.interpreters[name]['integrated-gradients-interpreter'] = integrated_gradients_interpreter
+            app.interpreters[name]['smooth-gradient-interpreter'] = smooth_gradient_interpreter
             
     @app.errorhandler(ServerError)
     def handle_invalid_usage(error: ServerError) -> Response:  # pylint: disable=unused-variable
@@ -244,6 +246,8 @@ def make_app(build_dir: str = None,
             interpreter = 'simple-gradients-interpreter'
         elif interpreter == 'integrated_gradients_interpreter':
             interpreter = 'integrated-gradients-interpreter'
+        elif interpreter == 'smooth_gradient_interpreter':
+            interpreter = 'smooth-gradient-interpreter'
 
         model = app.interpreters.get(lowered_model_name)[interpreter]
 
@@ -351,8 +355,8 @@ def make_app(build_dir: str = None,
             log_blob["outputs"]["label_probs"] = prediction["label_probs"]
         elif model_name == "named-entity-recognition":
             log_blob["outputs"]["tags"] = prediction["tags"]
-        elif model_name == "sentiment-analysis":
-            log_blob["outputs"]["class_probabilities"] = prediction["class_probabilities"]
+        # elif model_name == "sentiment-analysis":
+        #     log_blob["outputs"]["class_probabilities"] = prediction["class_probabilities"]
         elif model_name == "semantic-role-labeling":
             verbs = []
             for verb in prediction["verbs"]:
