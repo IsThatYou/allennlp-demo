@@ -18,41 +18,41 @@ const modelGroups = [
     {
         label: "Annotate a sentence",
         models: [
-            {model: "semantic-role-labeling", name: "Semantic Role Labeling", component: SemanticRoleLabeling},
-            {model: "named-entity-recognition", name: "Named Entity Recognition", component: NamedEntityRecognition},
-            {model: "constituency-parsing", name: "Constituency Parsing", component: ConstituencyParser},
-            {model: "dependency-parsing", name: "Dependency Parsing", component: DependencyParser},
-            {model: "open-information-extraction", name: "Open Information Extraction", component: OpenIe}
+            // {model: "semantic-role-labeling", name: "Semantic Role Labeling", component: SemanticRoleLabeling},
+            {model: "named-entity-recognition", name: "Named Entity Recognition", component: NamedEntityRecognition}
+            // {model: "constituency-parsing", name: "Constituency Parsing", component: ConstituencyParser},
+            // {model: "dependency-parsing", name: "Dependency Parsing", component: DependencyParser},
+            // {model: "open-information-extraction", name: "Open Information Extraction", component: OpenIe}
         ]
     },
-    {
-        label: "Annotate a passage",
-        models: [
-            {model: "coreference-resolution", name: "Coreference Resolution", component: Coref}
-        ]
-    },
+    // {
+    //     label: "Annotate a passage",
+    //     models: [
+    //         {model: "coreference-resolution", name: "Coreference Resolution", component: Coref}
+    //     ]
+    // },
     {
         label: "Answer a question",
         models: [
             {model: "reading-comprehension", name: "Reading Comprehension", component: ReadingComprehension}
         ]
     },
-    {
-        label: "Semantic parsing",
-        models: [
-            {model: "wikitables-parser", name: "WikiTableQuestions Semantic Parser", component: WikiTables},
-            {model: "nlvr-parser", name: "Cornell NLVR Semantic Parser", component: Nlvr},
-            {model: "atis-parser", name: "Text to SQL (ATIS)", component: Atis},
-            {model: "quarel-parser-zero", name: "QuaRel Zero", component: QuarelZero}
-        ]
-    },
+    // {
+    //     label: "Semantic parsing",
+    //     models: [
+    //         {model: "wikitables-parser", name: "WikiTableQuestions Semantic Parser", component: WikiTables},
+    //         {model: "nlvr-parser", name: "Cornell NLVR Semantic Parser", component: Nlvr},
+    //         {model: "atis-parser", name: "Text to SQL (ATIS)", component: Atis},
+    //         {model: "quarel-parser-zero", name: "QuaRel Zero", component: QuarelZero}
+    //     ]
+    // },
     {
         label: "Other",
         models: [
             {model: "textual-entailment", name: "Textual Entailment", component: TextualEntailment},
-            {model: "sentiment-analysis", name: "Sentiment Analysis", component: SentimentAnalysis},
-            {model: "event2mind", name: "Event2Mind", component: Event2Mind},
-            {model: "user-models", name: "Your model here!"}
+            {model: "sentiment-analysis", name: "Sentiment Analysis", component: SentimentAnalysis}
+            // {model: "event2mind", name: "Event2Mind", component: Event2Mind},
+            // {model: "user-models", name: "Your model here!"}
         ]
     }
 ]

@@ -8,6 +8,7 @@ import HotflipItem from '../Hotflip'
 import InputReductionItem from '../InputReduction'
 import InterpretationSingleInput from '../InterpretationSingleInput'
 
+// APIs
 const apiUrl = () => `${API_ROOT}/predict/sentiment-analysis`
 const attackapiUrl = () => `${API_ROOT}/attack/sentiment-analysis`
 const attackapiUrl2 = () => `${API_ROOT}/hotflip/sentiment-analysis`
@@ -20,7 +21,7 @@ const IG_INTERPRETER = 'integrated_gradients_interpreter'
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
 
 const description = (
-  <span> Sentiment Analysis predicts whether an input is positive or negative. The model is a variant of the Biattentive Classification Network from the <a href="https://arxiv.org/abs/1802.05365">ELMo paper</a>. This model is trained on the binary classification setting of the <a href="https://nlp.stanford.edu/sentiment/treebank.html">Stanford Sentiment Treebank</a>. </span>
+  <span> Sentiment Analysis predicts whether an input is positive or negative. The model is a simple LSTM using GloVe embeddings that is trained on the binary classification setting of the <a href="https://nlp.stanford.edu/sentiment/treebank.html">Stanford Sentiment Treebank</a>. </span>
 );
 
 const descriptionEllipsed = (  
@@ -29,42 +30,38 @@ const descriptionEllipsed = (
 
 const fields = [
   {name: "tokens", label: "Input", type: "TEXT_INPUT",
-   placeholder: 'E.g. "This movie is amazing"'}
+   placeholder: 'E.g. "amazing movie"'}
 ]
   
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
-    var returnVal = "";    
-    var t  = requestData;                    
-    var tokens = t['tokens'].split(' ');        
+    var prediction = "";            
     if (responseData['probs'][1] < responseData['probs'][0]){    
-        returnVal = "Positive";
+        prediction = "Positive";
     }
     else{
-      returnVal = "Negative";
+      prediction = "Negative";
     }
 
+  var t = requestData;                    
+  var tokens = t['tokens'].split(' ');
   return (
   <div className="model__content answer">        
     <OutputField label="Answer">
-      {returnVal}      
+      {prediction}      
     </OutputField>
+
 
     <OutputField>  
     <Accordion accordion={false}>        
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
-
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
-        
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
-      
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>         
-
       </Accordion>
     </OutputField>
   </div>
   );
 }
-
 
 const examples = [
   { tokens: "a very well-made, funny and entertaining picture." },
