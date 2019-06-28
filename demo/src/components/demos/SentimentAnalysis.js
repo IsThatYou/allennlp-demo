@@ -34,8 +34,8 @@ const fields = [
   
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
     var returnVal = "";    
-    const{ tokens } = requestData;    
-
+    var t  = requestData;                    
+    var tokens = t['tokens'].split(' ');        
     if (responseData['probs'][1] < responseData['probs'][0]){    
         returnVal = "Positive";
     }
@@ -54,7 +54,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
 
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
-
+        
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
       
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>         

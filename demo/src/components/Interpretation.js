@@ -99,6 +99,7 @@ export default class InterpretationComponent extends React.Component {
     }
 
     // Add indices so we can keep track after sorting
+    console.log("tww", tokensWithWeights)
     let indexedTokens = tokensWithWeights.map((obj, idx) => Object.assign({}, obj, {idx}))
     
     indexedTokens.sort(grad_compare)
@@ -147,7 +148,7 @@ export default class InterpretationComponent extends React.Component {
     
     if (simple_gradients_interpreter) {
       const { instance_1 } = simple_gradients_interpreter
-      const { grad_input_1, grad_input_2 } = instance_1 
+      const { grad_input_1, grad_input_2 } = instance_1
       const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
       premTokensWithWeights = tokensWithWeights[0]
       hypoTokensWithWeights = tokensWithWeights[1]      

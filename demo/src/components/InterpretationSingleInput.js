@@ -79,6 +79,7 @@ export default class InterpretationComponent extends React.Component {
     }
 
     // Add indices so we can keep track after sorting
+    console.log('tokenswithweights', tokensWithWeights);
     let indexedTokens = tokensWithWeights.map((obj, idx) => Object.assign({}, obj, {idx}))
     
     indexedTokens.sort(grad_compare)
@@ -113,17 +114,17 @@ export default class InterpretationComponent extends React.Component {
     if (simple_gradients_interpreter) {
       const { instance_1 } = simple_gradients_interpreter
       const { grad_input_1 } = instance_1 
+      console.log("grad_input_1", grad_input_1);
+      console.log("tokens", tokens);
 
-      const tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)
-      tokensWithWeights = tokensWithWeights[0]        
+      tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
     }
 
     if (integrated_gradients_interpreter) {
       const { instance_1 } = integrated_gradients_interpreter
       const { grad_input_1 } = instance_1 
 
-      const tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)
-      tokensWithWeights = tokensWithWeights[0]     
+      tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
     }
     
     const topKIdx = new Set(this.getTopKIndices(tokensWithWeights, true))        
