@@ -30,10 +30,10 @@ export default class InterpretationComponent extends React.Component {
     this.handleTopKChange = this.handleTopKChange.bind(this)    
     this.getTopKIndices = this.getTopKIndices.bind(this)
   }
-
+  
   static defaultProps = {
     colormapProps: {
-      colormap: 'RdBu',
+      colormap: 'copper',
       format: 'hex',
       nshades: 20
     }

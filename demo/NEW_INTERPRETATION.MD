@@ -7,7 +7,7 @@ We will walk through adding the [SmoothGrad](https://arxiv.org/abs/1706.03825) g
 ## Instructions
 1. Fork and clone [AllenNLP from source](https://github.com/allenai/allennlp#installing-from-source), so the library is editable.
 
-2. The interpretations live inside `allennlp/interpretation`. Create a new file for your interpretation method inside that folder, e.g., `allennlp/interpretation/smooth_gradient.py`. Now, write the code for your interpretation method. In SmoothGrad's case, we compute the gradient averaged over many noisy versions of the input. We began by copying the integrated_gradient file at `allennlp/interpretation/integrated_gradient.py` and modifying accordingly. You can see the final code with a commented walkthrough [TODO link here](TODOlink).
+2. The interpretations live inside `allennlp/interpretation`. Create a new file for your interpretation method inside that folder, e.g., `allennlp/interpretation/smooth_gradient.py`. Now, write the code for your interpretation method. In SmoothGrad's case, we compute the gradient averaged over many noisy versions of the input. We began by copying the integrated_gradient file at `allennlp/interpretation/integrated_gradient.py` and modifying accordingly. You can see the final code with a commented walkthrough [here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/interpretation/smooth_gradient.py).
 
 3. Add your new function to the `__init__.py` file in  `allennlp/interpretation/__init__.py`. In our case we add the line `from allennlp.interpretation.smooth_gradient import SmoothGradient`. 
 
