@@ -103,7 +103,7 @@ MODELS = {
                 2236
         ),
         'sentiment-analysis': DemoModel(
-                'https://s3-us-west-2.amazonaws.com/allennlp/models/glove.tar.gz',
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/sst-2-basic-classifier-glove-2019.06.27.tar.gz',
                 'sentiment-analysis',
                 1000
         ),        
