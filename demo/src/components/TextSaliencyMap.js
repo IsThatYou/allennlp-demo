@@ -1,9 +1,9 @@
 import React from 'react'
 import colormap from 'colormap'
 import styled from 'styled-components';
-import { Tooltip } from './Shared';
+import { Tooltip, ColorizedToken } from './Shared';
 
-class TextSaliencyMap extends React.Component {
+export default class TextSaliencyMap extends React.Component {
   constructor(props) {
     super(props)
 
@@ -92,18 +92,9 @@ class TextSaliencyMap extends React.Component {
             value={this.state.topK}
             className="slider"
             onChange={this.handleTopKChange} style={{ padding: "0px", margin: "0px" }} />
+        <br /> Visualizing the top {this.state.topK} words.
         <br /><br />
       </div>
     )
   }
 }
-
-const ColorizedToken = styled.span`
-  background-color: ${props => props.backgroundColor};
-  padding: 1px;
-  margin: 1px;
-  display: inline-block;
-  border-radius: 3px;
-`;
-
-export default TextSaliencyMap; 

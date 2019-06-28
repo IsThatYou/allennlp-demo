@@ -21,6 +21,7 @@ const title = "Named Entity Recognition";
 // Interpreters
 const IG_INTERPRETER = 'integrated_gradients_interpreter'
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
+const SG_INTERPRETER = 'smooth_gradient_interpreter'
 
 const description = (
   <span>
@@ -209,10 +210,11 @@ const generateSaliencyMaps = (grads, words, relevantTokens) => {
 
 const Output = ({ responseData, requestData,attackData,attackData2,attackModel, attackModel2, interpretData, interpretModel}) => {
     const { words, tags } = responseData
-    const { simple_gradients_interpreter, integrated_gradients_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined}
+    const { simple_gradients_interpreter, integrated_gradients_interpreter, smooth_gradient_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined, [SG_INTERPRETER]: undefined}
 
     let gradientSaliencyMaps 
     let igSaliencyMaps
+    let sgSaliencyMaps
 
     // "B" = "Beginning" (first token in a sequence of tokens comprising an entity)
     // "I" = "Inside" (token in a sequence of tokens (that isn't first or last in its sequence) comprising an entity)
@@ -276,6 +278,10 @@ const Output = ({ responseData, requestData,attackData,attackData2,attackModel, 
 
     if (integrated_gradients_interpreter) {
       igSaliencyMaps = generateSaliencyMaps(integrated_gradients_interpreter, words, relevantTokens)
+    }
+
+    if (smooth_gradient_interpreter) {
+      sgSaliencyMaps = generateSaliencyMaps(smooth_gradient_interpreter, words, relevantTokens)
     }
 
     var attack_visual = '';
@@ -360,6 +366,23 @@ const Output = ({ responseData, requestData,attackData,attackData2,attackModel, 
                     className="btn"
                     style={{margin: "30px 0px"}}
                     onClick={ () => interpretModel(requestData, IG_INTERPRETER) }>Interpret Prediction
+                  </button>
+                </AccordionItemBody>
+              </AccordionItem>
+
+              <AccordionItem expanded={false}>
+                <AccordionItemTitle>
+                  Integrated Gradients Interpretation
+                  <div className="accordion__arrow" role="presentation"/>
+                </AccordionItemTitle>
+                <AccordionItemBody>
+                  <p> See saliency map interpretations generated using <a href="https://arxiv.org/abs/1706.03825" target="_blank">SmoothGrad</a>.</p>              
+                  { sgSaliencyMaps !== undefined ? sgSaliencyMaps : <p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.</p>}
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{margin: "30px 0px"}}
+                    onClick={ () => interpretModel(requestData, SG_INTERPRETER) }>Interpret Prediction
                   </button>
                 </AccordionItemBody>
               </AccordionItem>

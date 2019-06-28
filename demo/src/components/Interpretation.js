@@ -181,11 +181,12 @@ export default class InterpretationComponent extends React.Component {
           <AccordionItemBody>
             <div className="content" dangerouslySetInnerHTML={{__html: title2}}></div>            
             <p><strong>Saliency Map:</strong></p>
-            {premTokensWithWeights.length !== 0 ? <div>{prem_token_color_map} <Tooltip /> <input type="range" min={0} max={prem_token_color_map.length} step="1" value={this.state.premtopK} className="slider" onChange={this.handlePremTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.</p>}
+            {premTokensWithWeights.length !== 0 ? <div>{prem_token_color_map} <Tooltip /> <input type="range" min={0} max={prem_token_color_map.length} step="1" value={this.state.premtopK} className="slider" onChange={this.handlePremTopKChange} style={{ padding: "0px", margin: "0px" }} /> 
+            <br /> Visualizing the top {this.state.premtopK} words. <br /><br /></div> : <p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.</p>}
                                    
             <p><strong>Saliency Map:</strong></p>                                                                
             {hypoTokensWithWeights.length !== 0 ? <div>{hypo_token_color_map} <Tooltip /> <input type="range" min={0} max={hypo_token_color_map.length} step="1" value={this.state.hypotopK} className="slider"
-            onChange={this.handleHypoTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /><br /></div> : <p></p>}
+            onChange={this.handleHypoTopKChange} style={{ padding: "0px", margin: "0px" }} /> <br /> Visualizing the top {this.state.hypotopK} words. <br /><br /></div> : <p></p>}
             <button type="button" className="btn" style={{margin: "30px 0px"}} onClick={() => interpretModel(requestData, interpreter)}>Interpret Prediction            
             </button>
           </AccordionItemBody>

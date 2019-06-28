@@ -180,15 +180,11 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     </div>
     <OutputField>
       <Accordion accordion={false}>
-       
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
+        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>    
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                    
-
-        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
-      
-        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
-
-        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>   
 
         <AccordionItem expanded={false}>
           <AccordionItemTitle>

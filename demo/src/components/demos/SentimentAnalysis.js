@@ -20,6 +20,7 @@ const title = "Sentiment Analysis"
 // Names of the interpreters used in this demo.
 const IG_INTERPRETER = 'integrated_gradients_interpreter'
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
+const SG_INTERPRETER = 'smooth_gradient_interpreter'
 
 // Text shown in the UI
 const description = (
@@ -57,10 +58,11 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 
     <OutputField>  
     <Accordion accordion={false}>        
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>  
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>         
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
         <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
-        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
-        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>         
       </Accordion>
     </OutputField>
   </div>
