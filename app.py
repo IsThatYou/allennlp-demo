@@ -242,14 +242,7 @@ def make_app(build_dir: str = None,
         if request.method == "OPTIONS":
             return Response(response="", status=200)
         lowered_model_name = model_name.lower()
-
-
-        if interpreter == 'simple_gradients_interpreter':
-            interpreter = 'simple-gradients-interpreter'
-        elif interpreter == 'integrated_gradients_interpreter':
-            interpreter = 'integrated-gradients-interpreter'
-        elif interpreter == 'smooth_gradient_interpreter':
-            interpreter = 'smooth-gradient-interpreter'
+        interpreter = interpeter.replace("_","-")
 
         model = app.interpreters.get(lowered_model_name)[interpreter]
 
