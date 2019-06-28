@@ -33,7 +33,7 @@ const fields = [
 ]
   
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {
-    var returnVal = "";
+    var returnVal = "";    
     const{ tokens } = requestData;    
 
     if (responseData['class_probabilities'][1] < responseData['class_probabilities'][0]){    
@@ -42,7 +42,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
     else{
       returnVal = "Negative";
     }
-  
+
   return (
   <div className="model__content answer">        
     <OutputField label="Answer">
@@ -57,7 +57,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
       
-        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
+        <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>         
 
       </Accordion>
     </OutputField>
