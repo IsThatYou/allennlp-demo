@@ -2,7 +2,7 @@
 
 The following describes the steps to add a new [AllenNLP](https://github.com/allenai/allennlp) model to the online AllenNLP demo, as well adding interpretations, attacks, and analysis.
 
-To begin, we assume you have an AllenNLP model with the code for the model in `allennlp/models/`. You will first need to create a AllenNLP Predictor for your model in `allennlp/predictor`. The predictor must include a function `predictions_to_labeled_instances`. This function will convert the model's output (e.g., class probabilities) into a predicted label. For example, in classification this function takes the argmax of the class probabilities. [TODOHere](link) is an example predictor for a Sentiment Analysis model.
+To begin, we assume you have an AllenNLP model with the code for the model in `allennlp/models/`. You will first need to create a AllenNLP Predictor for your model in `allennlp/predictor`. The predictor must include a function `predictions_to_labeled_instances`. This function will convert the model's output (e.g., class probabilities) into a predicted label. For example, in classification this function takes the argmax of the class probabilities. [Here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/predictors/sentiment_analysis.py) is an example predictor for a Sentiment Analysis model.
 
 With the predictor set up, we will now consider two possible scenarios. 1.) You want to demo a model for a task that is already available in the demos (e.g., a new textual entailment model). 2.) You are considering a new task that is not in the demos (e.g., say Sentiment Analysis is not present in the demo). 
 
@@ -41,4 +41,4 @@ If your task is not implemented in AllenNLP demos, we will need to create the ba
 <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
 <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>        
 ```
-See the [Sentiment AnalysisTODODOD front end TODODO](todo) for an example template with interpretations. 
+See the [Sentiment Analysis front end](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/demos/SentimentAnalysis.js) for an example template with interpretations. 
