@@ -43,7 +43,7 @@ export default class InterpretationComponent extends React.Component {
 
   static defaultProps = {
     colormapProps: {
-      colormap: 'RdBu',
+      colormap: 'copper',
       format: 'hex',
       nshades: 20
     }

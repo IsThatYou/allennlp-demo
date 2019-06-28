@@ -108,8 +108,8 @@ def make_app(build_dir: str = None,
         logger.info(f"loading {name} model")
         #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
         # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
-        #if name == "textual-entailment":                                
-        if name == "machine-comprehension":                                
+        if name == "textual-entailment":                                
+        #if name == "machine-comprehension":                                
         #if name == "named-entity-recognition":                        
         #if name == "sentiment-analysis":                        
             logger.info(f"loading {name} model")
@@ -242,7 +242,7 @@ def make_app(build_dir: str = None,
         if request.method == "OPTIONS":
             return Response(response="", status=200)
         lowered_model_name = model_name.lower()
-        interpreter = interpeter.replace("_","-")
+        interpreter = interpreter.replace("_","-")
 
         model = app.interpreters.get(lowered_model_name)[interpreter]
 
