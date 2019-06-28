@@ -230,9 +230,9 @@ const generateInterpretation = (requestData,
     <OutputField>
       <Accordion accordion={false}>
                    
-        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
-      
-        <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
+        <InterpretationComponent premTokensWithWeights={gradientPassageTokensWithWeights} hypoTokensWithWeights={gradientQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={GRAD_INTERPRETER} />
+
+        <InterpretationComponent premTokensWithWeights={igPassageTokensWithWeights} hypoTokensWithWeights={igQuestionTokensWithWeights} colormapProps={{colormap: 'copper',format: 'hex',nshades: 20}} interpretModelObject={interpretModel} requestDataObject={requestData} interpreter={IG_INTERPRETER} />
 
       </Accordion>
     </OutputField>

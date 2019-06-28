@@ -23,8 +23,8 @@ const apiUrlInterpret = ({interpreter}) => `${API_ROOT}/interpret/textual-entail
 
 const title = "Textual Entailment"
 
-const IG_INTERPRETER = 'integrated_gradients_interpreter'
 const GRAD_INTERPRETER = 'simple_gradients_interpreter'
+const IG_INTERPRETER = 'integrated_gradients_interpreter'
 
 const description = (
   <span>
@@ -186,7 +186,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
       
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
-
+  
         <AccordionItem expanded={false}>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
