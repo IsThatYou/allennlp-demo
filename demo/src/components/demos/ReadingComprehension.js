@@ -143,11 +143,13 @@ const ArithmeticEquation = ({numbers}) => {
 
 const Attack = ({requestData,passage_question_attention, question_tokens, passage_tokens, attackData,attackData2, attackModel,attackModel2}) => {  
 
+  let new_prediction = ''
   if(requestData && passage_question_attention && question_tokens && passage_tokens && attackModel) {
     var attack_visual = '';
     var attack_visual2 = '';
     var attack_visual_og = '';
     var attack_visual2_og = '';
+
   if (attackData === undefined) {
     attack_visual = " "
   }
@@ -160,10 +162,11 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
   if (attackData2 === undefined) {
     attack_visual2 = " "
   }
-  else{
+  else {
     var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"][0])
     attack_visual2 = second
-    attack_visual2_og = first    
+    attack_visual2_og = first 
+    new_prediction = <p><b>Changed prediction to: </b>{attackData2['new_prediction']}</p>
   }  
   return(
 
@@ -177,7 +180,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     <AccordionItemBody>
       <p> <a href="https://arxiv.org/abs/1804.07781" target="_blank">Input Reduction</a> removes as many words from the input as possible without changing the model's prediction.</p>      
       {attack_visual != " " ? <p><strong>Original Input:</strong> {attack_visual_og}</p> : <p style={{color: "#7c7c7c"}}>Press "reduce input" to run input reduction.</p>}    
-      {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}                
+      {attack_visual != " " ? <p><strong>Reduced Input:</strong> {attack_visual}</p> : <p></p>}               
               <button
                 type="button"
                 className="btn"
@@ -196,7 +199,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
             <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the question to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                
             {attack_visual2 != " " ? <p><strong>Original Input:</strong> {attack_visual2_og}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}    
             {attack_visual2 != " " ? <p><strong>Flipped Input:</strong> {attack_visual2}</p> : <p></p>}          
-
+            {new_prediction} 
                 <button
                   type="button"
                   className="btn"

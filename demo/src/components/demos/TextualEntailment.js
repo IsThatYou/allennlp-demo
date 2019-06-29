@@ -90,6 +90,8 @@ const judgments = {
 const Output = ({ responseData,requestData, attackData,attackData2,attackModel,attackModel2, interpretData, interpretModel}) => {  
   const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
   const [entailment, contradiction, neutral] = label_probs
+  
+  let task = "textual_entailment"
 
     // request data contains {premise: "...", hypothesis: "..."} just as we would expect 
 
@@ -184,7 +186,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>   
         <InterpretationComponent interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>    
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
-        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                    
+        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData} task={task} />                    
 
         <AccordionItem expanded={false}>
           <AccordionItemTitle>
