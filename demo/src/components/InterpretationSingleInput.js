@@ -64,7 +64,6 @@ export default class InterpretationComponent extends React.Component {
 
   handleTopKChange = e => {
     let stateUpdate = Object.assign({}, this.state)
-    console.log('state updatessss', stateUpdate)
     if (e.target.value.trim() === "") {
       stateUpdate['topK'] = e.target.value    
     } else {
@@ -79,7 +78,6 @@ export default class InterpretationComponent extends React.Component {
     }
 
     // Add indices so we can keep track after sorting
-    console.log('tokenswithweights', tokensWithWeights);
     let indexedTokens = tokensWithWeights.map((obj, idx) => Object.assign({}, obj, {idx}))
     
     indexedTokens.sort(grad_compare)
@@ -90,11 +88,11 @@ export default class InterpretationComponent extends React.Component {
   }
 
   render() {
-    console.log("RENDERING")
     const { interpretData, tokens, interpretModel, requestData, interpreter } = this.props 
 
     const GRAD_INTERPRETER = 'simple_gradients_interpreter'
-    const IG_INTERPRETER = 'integrated_gradients_interpreter'    
+    const IG_INTERPRETER = 'integrated_gradients_interpreter'
+    const SG_INTERPRETER = 'smooth_gradient_interpreter'    
 
     let title1 = ''
     let title2 = ''
@@ -106,30 +104,34 @@ export default class InterpretationComponent extends React.Component {
         title1 = 'Integrated Gradients Visualization'
         title2 = '<p> See saliency map interpretations generated using <a href="https://arxiv.org/abs/1703.01365" target="_blank">Integrated Gradients</a>.</p>'
     }
-
-    const { simple_gradients_interpreter, integrated_gradients_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined} 
-
-    let tokensWithWeights = []    
-    
-    if (simple_gradients_interpreter) {
-      const { instance_1 } = simple_gradients_interpreter
-      const { grad_input_1 } = instance_1 
-      console.log("grad_input_1", grad_input_1);
-      console.log("tokens", tokens);
-
-      tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
+    else if (interpreter == SG_INTERPRETER){          
+        title1 = 'SmoothGrad Visualization'
+        title2 = '<p> See saliency map interpretations generated using <a href="https://arxiv.org/abs/1706.03825" target="_blank">SmoothGrad</a>.</p>'
     }
 
-    if (integrated_gradients_interpreter) {
+    const { simple_gradients_interpreter, integrated_gradients_interpreter, smooth_gradient_interpreter } = interpretData ? interpretData : {[GRAD_INTERPRETER]: undefined, [IG_INTERPRETER]: undefined} 
+
+    let tokensWithWeights = []    
+
+    if (simple_gradients_interpreter && interpreter == GRAD_INTERPRETER) {
+      const { instance_1 } = simple_gradients_interpreter
+      const { grad_input_1 } = instance_1 
+      tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
+    }
+    if (integrated_gradients_interpreter && interpreter == IG_INTERPRETER) {
       const { instance_1 } = integrated_gradients_interpreter
       const { grad_input_1 } = instance_1 
-
+      tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
+    }
+    if (smooth_gradient_interpreter && interpreter == SG_INTERPRETER) {
+      const { instance_1 } = smooth_gradient_interpreter
+      const { grad_input_1 } = instance_1 
       tokensWithWeights = getTokenWeightPairs(grad_input_1, tokens)    
     }
     
     const topKIdx = new Set(this.getTopKIndices(tokensWithWeights, true))        
     const token_color_map = this.colorize(tokensWithWeights, topKIdx)
-                
+
     return (
       <div>
        <AccordionItem expanded={true}>

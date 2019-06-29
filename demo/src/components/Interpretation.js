@@ -74,7 +74,6 @@ export default class InterpretationComponent extends React.Component {
 
   handlePremTopKChange = e => {
     let stateUpdate = Object.assign({}, this.state)
-    console.log('state updatessss', stateUpdate)
     if (e.target.value.trim() === "") {
       stateUpdate['premtopK'] = e.target.value    
     } else {
@@ -84,7 +83,6 @@ export default class InterpretationComponent extends React.Component {
   }
   handleHypoTopKChange = e => {
     let stateUpdate = Object.assign({}, this.state)
-    console.log('state updatessss', stateUpdate)
     if (e.target.value.trim() === "") {
       stateUpdate['hypotopK'] = e.target.value
     } else {
@@ -141,21 +139,21 @@ export default class InterpretationComponent extends React.Component {
     let premTokensWithWeights = []
     let hypoTokensWithWeights = []    
     
-    if (simple_gradients_interpreter) {
+    if (simple_gradients_interpreter && interpreter === GRAD_INTERPRETER) {
       const { instance_1 } = simple_gradients_interpreter
       const { grad_input_1, grad_input_2 } = instance_1
       const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
       premTokensWithWeights = tokensWithWeights[0]
       hypoTokensWithWeights = tokensWithWeights[1]      
     }
-    if (integrated_gradients_interpreter) {
+    if (integrated_gradients_interpreter && interpreter == IG_INTERPRETER) {
       const { instance_1 } = integrated_gradients_interpreter
       const { grad_input_1, grad_input_2 } = instance_1 
       const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
       premTokensWithWeights = tokensWithWeights[0]
       hypoTokensWithWeights = tokensWithWeights[1]      
     }
-    if (smooth_gradient_interpreter){
+    if (smooth_gradient_interpreter && interpreter == SG_INTERPRETER){
      const { instance_1 } = smooth_gradient_interpreter
      const { grad_input_1, grad_input_2 } = instance_1 
      const tokensWithWeights = getTokenWeightPairs(grad_input_2, grad_input_1, premise_tokens, hypothesis_tokens)
@@ -168,9 +166,6 @@ export default class InterpretationComponent extends React.Component {
     const prem_token_color_map = this.colorize(premTokensWithWeights, premtopKIdx)
     const hypo_token_color_map = this.colorize(hypoTokensWithWeights, hypoKIdx)          
 
-    console.log("preT");
-    console.log(interpretData);
-    console.log(premTokensWithWeights);
     return (
       <div>
        <AccordionItem expanded={true}>

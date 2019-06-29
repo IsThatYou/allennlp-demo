@@ -49,11 +49,13 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
   var t = requestData;                    
   var tokens = t['tokens'].split(' '); // this model expects space-separated inputs
 
+  console.log("interpretData");
+  console.log(interpretData);
   // The "Answer" output field has the models predictions. The other output fields are the reusable HTML/JavaScript for the interpretation methods.
   return (
   <div className="model__content answer">        
     <OutputField label="Answer">
-      {prediction}      
+    {prediction}      
     </OutputField>
 
     <OutputField>  
