@@ -1,6 +1,6 @@
 # Add A New Model to Be Analyzed
 
-The following describes the steps to add a new [AllenNLP](https://github.com/allenai/allennlp) model to the online AllenNLP demo, as well adding interpretations, attacks, and analysis.
+The following describes the steps to add a new [AllenNLP](https://github.com/allenai/allennlp) model to the online AllenNLP demo, as well adding analysis methods (interpretations and attacks) for that model.
 
 To begin, we assume you have an AllenNLP model with the code for the model in `allennlp/models/`. You will first need to create a AllenNLP Predictor for your model in `allennlp/predictor`. The predictor must include a function `predictions_to_labeled_instances`. This function will convert the model's output (e.g., class probabilities) into a predicted label. For example, in classification this function takes the argmax of the class probabilities. [Here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/predictors/sentiment_analysis.py) is an example predictor for a Sentiment Analysis model.
 
