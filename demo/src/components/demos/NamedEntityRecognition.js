@@ -372,7 +372,7 @@ const Output = ({ responseData, requestData,attackData,attackData2,attackModel, 
 
               <AccordionItem expanded={false}>
                 <AccordionItemTitle>
-                  Integrated Gradients Interpretation
+                  SmoothGrad Interpretation
                   <div className="accordion__arrow" role="presentation"/>
                 </AccordionItemTitle>
                 <AccordionItemBody>
@@ -403,24 +403,6 @@ const Output = ({ responseData, requestData,attackData,attackData2,attackModel, 
                       </button>  
                 </AccordionItemBody>
               </AccordionItem>
-        <AccordionItem expanded={true}>
-          <AccordionItemTitle>
-            HotFlip Attack
-            <div className="accordion__arrow" role="presentation"/>
-          </AccordionItemTitle>
-          <AccordionItemBody>
-            <p> <a href="https://arxiv.org/abs/1712.06751" target="_blank">HotFlip</a> flips words in the input to change the model's prediction. We iteratively flip the word with the highest gradient until the prediction changes.</p>                                            
-                  {attack_visual2 != " " ? <p>{attack_visual2}</p> : <p style={{color: "#7c7c7c"}}>Press "flip words" to run HotFlip.</p>}                      
-                  <button
-                  type="button"
-                  className="btn"
-                  style={{margin: "30px 0px"}}
-                  onClick={ () => attackModel2(requestData) }>Flip Words
-                </button>
-
-          </AccordionItemBody>
-        </AccordionItem>
-
             </Accordion>
         </div>
       </div>

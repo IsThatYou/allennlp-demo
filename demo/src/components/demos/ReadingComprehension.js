@@ -295,7 +295,7 @@ const generateInterpretation = (requestData,
               <div className="accordion__arrow" role="presentation"/>
             </AccordionItemTitle>
             <AccordionItemBody>
-            <p>See saliency map interpretations generated using <a href="https://arxiv.org/abs/1706.03825" target="_blank">SmoothGrad</a></p>
+            <p>See saliency map interpretations generated using <a href="https://arxiv.org/abs/1706.03825" target="_blank">SmoothGrad</a>.</p>
             <p><strong>Saliency Map for Passage:</strong></p>
             { sgPassageTokensWithWeights.length !== 0 ? <TextSaliencyMap tokensWithWeights={sgPassageTokensWithWeights} colormapProps={{colormap: 'copper',
                                                                                         format: 'hex',
@@ -417,9 +417,9 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
                 {question}
               </OutputField>
 
-              <Attention {...responseData}/>
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
+              <Attention {...responseData}/>
 
             </section>
           )
@@ -451,10 +451,9 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
                   highlightStyles={spans.map(s => "highlight__answer")}/>
               </OutputField>
 
-              <Attention {...responseData}/>
-
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
+              <Attention {...responseData}/>
             
             </section>
           )
@@ -483,10 +482,9 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
                 {question}
               </OutputField>
 
-              <Attention {...responseData}/>
-              
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
+              <Attention {...responseData}/>
 
             </section>
           )
@@ -518,10 +516,9 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
                 {question}
               </OutputField>
 
-              <Attention {...responseData}/>
-              
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
+              <Attention {...responseData}/>              
 
             </section>
           )
@@ -551,11 +548,11 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
                 {question}
               </OutputField>
 
-              <Attention {...responseData}/>
-              
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
+              <Attention {...responseData}/>
               
+
             </section>
           )
         }
