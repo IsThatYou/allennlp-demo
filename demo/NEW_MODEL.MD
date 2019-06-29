@@ -2,9 +2,9 @@
 
 The following describes the steps to add a new [AllenNLP](https://github.com/allenai/allennlp) model to the online AllenNLP demo, as well adding analysis methods (interpretations and attacks) for that model.
 
-To begin, we assume you have an AllenNLP model with the code for the model in `allennlp/models/`. You will first need to create a AllenNLP Predictor for your model in `allennlp/predictor`. The predictor must include a function `predictions_to_labeled_instances`. This function will convert the model's output (e.g., class probabilities) into a predicted label. For example, in classification this function takes the argmax of the class probabilities. [Here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/predictors/sentiment_analysis.py) is an example predictor for a Sentiment Analysis model.
+To begin, we assume you have an AllenNLP model with the code for the model in `allennlp/models/`. First, create a AllenNLP Predictor for your model in `allennlp/predictor`. The predictor should include a function `predictions_to_labeled_instances`. This function will convert the model's output (e.g., class probabilities) into a predicted label. For example, for classification this function takes the argmax of the class probabilities. [Here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/predictors/sentiment_analysis.py) is an example predictor for a Sentiment Analysis model with the `predictions_to_labeled_instances` funcction.
 
-With the predictor set up, we will now consider two possible scenarios. 1.) You want to demo a model for a task that is already available in the demos (e.g., a new textual entailment model). 2.) You are considering a new task that is not in the demos (e.g., say Sentiment Analysis is not present in the demo). 
+With the predictor set up, we will now consider two possible scenarios. 1.) The task your model solves is already available in the demos (e.g., adding a new textual entailment model). 2.) You are creating a demo for a task that is not in the demos (e.g., say Sentiment Analysis is not present in the demo). 
 
 ## New Model for Existing Task
 
@@ -16,7 +16,7 @@ Adding a new model for a task that exists in the demos is a one line change of c
 
 ## New Task
 
-If your task is not implemented in AllenNLP demos, we will need to create the back end code (about 5 lines) to run the model predictions, as well as the front end JavaScript/HTML to display its predictions and interpretations. We will use Sentiment Analysis as a running example.
+If your task is not implemented in the AllenNLP demos, we will need to create the back end code (about 5 lines) to run the model predictions, as well as the front end JavaScript/HTML to display its predictions and interpretations. We will use Sentiment Analysis as a running example.
 
 1. Fork and clone [allennlp-demo](https://github.com/allenai/allennlp-demo) and follow the installation instructions.
 
@@ -33,7 +33,6 @@ If your task is not implemented in AllenNLP demos, we will need to create the ba
 3. In `app.py` consider adding logging of your model's outputs. Search for `log_blob` in the `predict` function. Also, specify the name of the input you want to attack/interpret. For example, in Reading Comprehension there is a paragraph and a question, and you should specify which you want to modify. Add this to the `inputs_to_interpret` map using the name from your predictor, e.g., `tokens` for sentiment analysis.
 
 4. The backend is now set up. Now let's create the front end for your model. Add a line for your model in `demo/src/model.js`. Also make sure to import your component at the top of the file.
-
 
 5. Create a new JavaScript file for your model in `demo/src/components/demo`. The JavaScript follows a basic template that can be copied from other files. See the [Sentiment Analysis front end](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/demos/SentimentAnalysis.js) for an example template with interpretations. 
 
