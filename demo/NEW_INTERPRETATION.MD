@@ -5,7 +5,7 @@ Below are the steps to add a new interpretation/attack method and the correspond
 We will walk through adding the [SmoothGrad](https://arxiv.org/abs/1706.03825) gradient-based interpretation method from scratch. We will first modify the [AllenNLP repo](https://github.com/allenai/allennlp) to create the interpretation method. Then, we will  modify the [AllenNLP Demo repo](https://github.com/allenai/allennlp-demo) to create the front end visualization.
 
 ## Instructions
-1. Fork and clone [AllenNLP from source](https://github.com/allenai/allennlp#installing-from-source), so the library is editable.
+1. Fork and clone [AllenNLP from source](https://github.com/allenai/allennlp#installing-from-source), so that the library is editable.
 
 2. The interpretations live inside `allennlp/interpretation`. Create a new file for your interpretation method inside that folder, e.g., `allennlp/interpretation/smooth_gradient.py`. Now, write the code for your interpretation method. In SmoothGrad's case, we compute the gradient averaged over many noisy versions of the input. We began by copying the integrated_gradient file at `allennlp/interpretation/integrated_gradient.py` and modifying accordingly. You can see the final code with a commented walkthrough [here](https://github.com/IsThatYou/allennlp/blob/re_attacks/allennlp/interpretation/smooth_gradient.py).
 
