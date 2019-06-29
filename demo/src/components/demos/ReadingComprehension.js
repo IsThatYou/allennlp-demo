@@ -534,20 +534,18 @@ const AnswerByType = ({requestData, responseData, interpretModel, interpretData,
           const tail = passage.slice(start + best_span_str.length);
           return (
             <section>
-              <OutputField label="Answer">
+              <strong>Answer:</strong><br />
                 {best_span_str}
-              </OutputField>
+                <br /><br />
 
-              <OutputField label="Passage Context">
+                <strong>Passage Context:</strong><br />
                 <span>{head}</span>
                 <span className="highlight__answer">{best_span_str}</span>
                 <span>{tail}</span>
-              </OutputField>
+                <br /><br />
 
-              <OutputField label="Question">
-                {question}
-              </OutputField>
-
+              <strong>Question:</strong><br />  {question} <br /><br />
+              
               {saliencyMaps}
               <Attack requestData = {requestData} {...responseData} attackData={attackData} attackData2 = {attackData2} attackModel={attackModel} attackModel2={attackModel2}/>
               <Attention {...responseData}/>

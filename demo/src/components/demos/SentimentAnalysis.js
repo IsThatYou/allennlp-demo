@@ -48,7 +48,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 
   var t = requestData;                    
   var tokens = t['tokens'].split(' '); // this model expects space-separated inputs
-
+  var task = "sentiment";
   console.log("interpretData");
   console.log(interpretData);
   // The "Answer" output field has the models predictions. The other output fields are the reusable HTML/JavaScript for the interpretation methods.
@@ -64,7 +64,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={IG_INTERPRETER}/>  
         <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={SG_INTERPRETER}/>         
         <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
-        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
+        <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData} task={task}/>                             
       </Accordion>
     </OutputField>
   </div>
@@ -75,7 +75,7 @@ const Output = ({ responseData,requestData, attackData,attackData2,attackModel,a
 const examples = [
   { tokens: "a very well-made, funny and entertaining picture." },
   { tokens: "so unremittingly awful that labeling it a dog probably constitutes cruelty to canines" },  
-  { tokens: "all the amped-up tony hawk-style stunts and thrashing rap-metal can't disguise the fact that, really, we've been here, done that."},  
+  { tokens: "all the amped up tony hawk style stunts and thrashing rap-metal can't disguise the fact that, really, we've been here, done that."},  
   { tokens: "visually imaginative, thematically instructive and thoroughly delightful, it takes us on a roller-coaster ride from innocence to experience without even a hint of that typical kiddie-flick sentimentality."}
 ]
 
