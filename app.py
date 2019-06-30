@@ -109,10 +109,10 @@ def make_app(build_dir: str = None,
         #if (name == "named-entity-recognition"):# or (name == "naqanet-reading-comprehension"):        
         # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
         # if name == "naqanet-reading-comprehension":
-        if name == "textual-entailment":                                
+        # if name == "textual-entailment":                                
         # if name == "machine-comprehension":                                
         # if name == "named-entity-recognition":                        
-        # if name == "sentiment-analysis":                        
+        if name == "sentiment-analysis":                        
             logger.info(f"loading {name} model")
             predictor = demo_model.predictor()
             app.predictors[name] = predictor
@@ -204,11 +204,11 @@ def make_app(build_dir: str = None,
         if len(serialized_request) > max_request_length:
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
-        inputs_to_interpret = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
-        inputs_to_interpret_map = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
+        inputs_to_attack = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
+        inputs_to_attack_map = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
 
         print(lowered_model_name)
-        attack = model.attack_from_json(data,inputs_to_interpret[lowered_model_name],inputs_to_interpret_map[inputs_to_interpret[lowered_model_name]])
+        attack = model.attack_from_json(data,inputs_to_attack[lowered_model_name],inputs_to_attack_map[inputs_to_attack[lowered_model_name]])
         return jsonify(attack)
         
     @app.route('/hotflip/<model_name>', methods=['POST','OPTIONS'])
@@ -229,10 +229,10 @@ def make_app(build_dir: str = None,
         if len(serialized_request) > max_request_length:
             raise ServerError(f"Max request length exceeded for model {model_name}! " +
                               f"Max: {max_request_length} Actual: {len(serialized_request)}")
-        inputs_to_interpret = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
-        inputs_to_interpret_map = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
+        inputs_to_attack = {"sentiment-analysis":"tokens","machine-comprehension":"question", "textual-entailment":"hypothesis","naqanet-reading-comprehension":"question","named-entity-recognition":"tokens"}
+        inputs_to_attack_map = {"question":"grad_input_2", "passage":"grad_input_1","hypothesis":"grad_input_1","premise":"grad_input_2","tokens":"grad_input_1"}
         
-        attack = model.attack_from_json(data,inputs_to_interpret[lowered_model_name],inputs_to_interpret_map[inputs_to_interpret[lowered_model_name]])
+        attack = model.attack_from_json(data,inputs_to_attack[lowered_model_name],inputs_to_attack_map[inputs_to_attack[lowered_model_name]])
         return jsonify(attack)
 
     @app.route('/interpret/<model_name>/<interpreter>', methods=['POST', 'OPTIONS'])
