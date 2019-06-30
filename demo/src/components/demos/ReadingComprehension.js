@@ -166,7 +166,7 @@ const Attack = ({requestData,passage_question_attention, question_tokens, passag
     var [first,second] = postprocessHotflip(attackData2["original"],attackData2["final"][0])
     attack_visual2 = second
     attack_visual2_og = first 
-    new_prediction = <p><b>Changed prediction to: </b>{attackData2['new_prediction']}</p>
+    new_prediction = <p><b>Changed prediction to:</b> {attackData2['new_prediction']}</p>
   }  
   return(
 
