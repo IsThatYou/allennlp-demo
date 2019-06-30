@@ -27,7 +27,7 @@ export default class HotflipItem extends React.Component {
 
       if (task == "sentiment") {
         let [pos, neg] = attackDataObject2["new_prediction"]
-        new_prediction = <p><b>Prediction changed to:</b> {pos > neg ? 'positive' : 'negative'}</p>
+        new_prediction = <p><b>New Prediction:</b> {pos > neg ? 'Positive' : 'Negative'}</p>
       }
 
       if (task == "textual_entailment") {
@@ -35,18 +35,18 @@ export default class HotflipItem extends React.Component {
         let prediction = ''
         if (entail > contr) {
           if (entail > neutral) {
-            prediction = "entailment"
+            prediction = "Entailment"
           } else {
-            prediction = "neutral"
+            prediction = "Neutral"
           }
         } else {
           if (contr > neutral) {
-            prediction = "contradiction"
+            prediction = "Contradiction"
           } else {
-            prediction = "neutral"
+            prediction = "Neutral"
           }
         }
-        new_prediction = <p><b>Prediction changed to:</b> {prediction}</p>
+        new_prediction = <p><b>New Prediction:</b> {prediction}</p>
       }
     }
 
