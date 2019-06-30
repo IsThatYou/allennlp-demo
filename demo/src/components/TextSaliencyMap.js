@@ -92,7 +92,7 @@ export default class TextSaliencyMap extends React.Component {
             value={this.state.topK}
             className="slider"
             onChange={this.handleTopKChange} style={{ padding: "0px", margin: "10px 0px" }} />
-        <br /> Visualizing the top {this.state.topK} words.
+        <br /> <span style={{ color: "#72BCFF" }}>Visualizing the top {this.state.topK} words.</span>
         <br /><br />
       </div>
     )
