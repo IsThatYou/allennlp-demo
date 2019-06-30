@@ -110,8 +110,8 @@ def make_app(build_dir: str = None,
         # if (name == "textual-entailment" or name == "machine-comprehension" or name == "naqanet-reading-comprehension" or name=="named-entity-recognition" or name=="fine-grained-named-entity-recognition"):        
         # if name == "naqanet-reading-comprehension":
         # if name == "textual-entailment":                                
-        # if name == "machine-comprehension":                                
-        if name == "named-entity-recognition":                        
+        if name == "machine-comprehension":                                
+        # if name == "named-entity-recognition":                        
         # if name == "sentiment-analysis":                        
             logger.info(f"loading {name} model")
             predictor = demo_model.predictor()

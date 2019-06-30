@@ -48,11 +48,6 @@ export default class HotflipItem extends React.Component {
         }
         new_prediction = <p><b>Prediction changed to:</b> {prediction}</p>
       }
-
-      // if (task == "reading_comprehension") {
-      //   let prediction = attackDataObject2["new_prediction"]
-      //   new_prediction = <p><b>Changed prediction to:</b> {prediction}</p>
-      // }
     }
 
   if (task == "sentiment"){

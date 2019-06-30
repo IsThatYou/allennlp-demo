@@ -81,7 +81,7 @@ export default class TextSaliencyMap extends React.Component {
     const token_color_map = this.colorize(tokensWithWeights, topKIdx)
     
     return (
-      <div>
+      <div style={{ flex: "0 1 100%" }}>
         {token_color_map}
         <Tooltip />
         <input
@@ -91,7 +91,7 @@ export default class TextSaliencyMap extends React.Component {
             step="1"            
             value={this.state.topK}
             className="slider"
-            onChange={this.handleTopKChange} style={{ padding: "0px", margin: "0px" }} />
+            onChange={this.handleTopKChange} style={{ padding: "0px", margin: "10px 0px" }} />
         <br /> Visualizing the top {this.state.topK} words.
         <br /><br />
       </div>

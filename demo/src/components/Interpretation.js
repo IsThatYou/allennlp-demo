@@ -176,7 +176,7 @@ export default class InterpretationComponent extends React.Component {
           <AccordionItemBody>
             <div className="content" dangerouslySetInnerHTML={{__html: title2}}></div>            
             <p><strong>Saliency Map:</strong></p>
-            {premTokensWithWeights.length !== 0 ? <div>{prem_token_color_map} <Tooltip /> <input type="range" min={0} max={prem_token_color_map.length} step="1" value={this.state.premtopK} className="slider" onChange={this.handlePremTopKChange} style={{ padding: "0px", margin: "0px" }} /> 
+            {premTokensWithWeights.length !== 0 ? <div>{prem_token_color_map} <Tooltip /> <input type="range" min={0} max={prem_token_color_map.length} step="1" value={this.state.premtopK} className="slider" onChange={this.handlePremTopKChange} style={{ padding: "0px", margin: "10px 0px" }} /> 
             <br /> Visualizing the top {this.state.premtopK} words. <br /><br /></div> : <p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.</p>}
                                    
             <p><strong>Saliency Map:</strong></p>                                                                

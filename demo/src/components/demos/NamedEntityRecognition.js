@@ -194,7 +194,7 @@ const generateSaliencyMaps = (grads, words, relevantTokens) => {
 
     saliencyMaps.push(
       <div key={i} style={{ display: "flex", flexWrap: "wrap" }}>
-        <p style={{ padding: "2px", margin: "3px" }}><strong>Showing interpretation for</strong></p>
+        <p><strong>Showing interpretation for</strong></p>
         <TokenSpan key={i} token={relevantTokens[i-1]} />
         <TextSaliencyMap tokensWithWeights={sentenceTokensWithWeights} colormapProps={{ colormap: 'copper',
                                                                                         format: 'hex',
