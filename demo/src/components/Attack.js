@@ -49,7 +49,7 @@ export function postprocessInputReduction(org,data){
   var idx = 0;
   var idx2 = 0;
   while (idx2<=data.length){    
-    if (org[idx] == data[idx2]){
+    if (org[idx] === data[idx2]){
       result_string.push(
         <ColorizedToken backgroundColor={"transparent"}
         key={idx}>{org[idx]} </ColorizedToken>);
@@ -60,7 +60,7 @@ export function postprocessInputReduction(org,data){
       idx2++;
     }       
     else {
-      while (idx<=org.length && org[idx] != data[idx2]){
+      while (idx<=org.length && org[idx] !== data[idx2]){
         result_string.push(
           <ColorizedToken backgroundColor={"#FF5733"}
           key={idx}><strike>{org[idx]}</strike> </ColorizedToken>);

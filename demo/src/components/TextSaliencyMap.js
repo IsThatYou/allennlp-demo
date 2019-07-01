@@ -1,6 +1,5 @@
 import React from 'react'
 import colormap from 'colormap'
-import styled from 'styled-components';
 import { Tooltip, ColorizedToken } from './Shared';
 
 export default class TextSaliencyMap extends React.Component {

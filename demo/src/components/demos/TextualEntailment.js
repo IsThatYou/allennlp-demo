@@ -14,7 +14,6 @@ import {
   AccordionItemBody,
   } from 'react-accessible-accordion';
 import '../../css/TeComponent.css';
-import styled from 'styled-components';
 
 const apiUrl = () => `${API_ROOT}/predict/textual-entailment`
 const attackapiUrl = () => `${API_ROOT}/attack/textual-entailment`
