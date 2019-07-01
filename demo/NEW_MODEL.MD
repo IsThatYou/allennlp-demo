@@ -25,7 +25,7 @@ If your task is not implemented in the AllenNLP demos, we will need to create th
 1. Fork and clone [allennlp-demo](https://github.com/allenai/allennlp-demo) and follow the installation instructions.
 
 2. Add the path to your trained model using a `DemoModel` in `server/models.py`. For example, we will add 
-```
+```py
         'sentiment-analysis': DemoModel(
                 'my_sentiment_model.tar.gz',
                 'sentiment-analysis',
@@ -41,7 +41,7 @@ where 1000 is the limit on input length. Make sure `sentiment-analysis` matches 
 5. Create a new JavaScript file for your model in `demo/src/components/demo`. The JavaScript follows a basic template that can be copied from other files. See the [Sentiment Analysis front end](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/demos/SentimentAnalysis.js) for an example template with interpretations. 
 
 We have created reusable components for gradient-based interpretations, attacks, etc. For example, the four lines below create dropdowns for Input Reduction, HotFlip, gradient-based interpretations, and integrated gradients. 
-```
+```js
 <InputReductionItem attackDataObject={attackData} attackModelObject={attackModel} requestDataObject={requestData}/>                              
 <HotflipItem attackDataObject2={attackData2} attackModelObject2={attackModel2} requestDataObject2={requestData}/>                             
 <InterpretationSingleInput interpretData={interpretData} tokens={tokens} interpretModel = {interpretModel} requestData = {requestData} interpreter={GRAD_INTERPRETER}/>        
