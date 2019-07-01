@@ -1,4 +1,4 @@
-# Add A New Model to Be Analyzed
+# Add a New Model to Be Analyzed
 
 The following describes the steps to add a new [AllenNLP](https://github.com/allenai/allennlp) model to the online AllenNLP demo, as well adding analysis methods (interpretations and attacks) for that model.
 
