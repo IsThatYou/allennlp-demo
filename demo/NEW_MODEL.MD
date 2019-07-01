@@ -50,7 +50,7 @@ We have created reusable components for gradient-based interpretations, attacks,
 
 where: 
 - `attackData` contains the original and final tokens after Input Reduction is applied 
-- `attackModel` is a is a method on the [Model class](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/Model.js) that sends a request to the allennlp API for an Input Reduction attack
+- `attackModel` is a method on the [Model class](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/Model.js) that sends a request to the allennlp API for an Input Reduction attack
 - `attackData2` contains the original and final input after HotFlip is applied. It also contains the new prediction of the model for the flipped input. 
 - `attackModel2` is a method on the [Model class](https://github.com/IsThatYou/allennlp-demo/blob/attack_demo/demo/src/components/Model.js) that sends a request to the allennlp API for a HotFlip attack
 - `requestData` contains the raw (not tokenized) input(s) to the model and the interpreter to use
