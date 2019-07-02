@@ -1,4 +1,4 @@
-# Adding a New Interpretation or Attack Method
+# Adding a New Interpretation Method
 
 Below are the steps to add a new interpretation/attack method and the corresponding front-end visualization.
 
