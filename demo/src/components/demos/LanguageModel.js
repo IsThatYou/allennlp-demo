@@ -348,6 +348,7 @@ class App extends React.Component {
         // If the user entered text by typing don't overwrite it, as that feels
         // weird. If they clicked it overwrite it
         const output = choice === undefined ? this.state.output : data.output
+        console.log(data);
         this.setState({...data, output: sentence, loading: false})
         this.requestData = output;
       }

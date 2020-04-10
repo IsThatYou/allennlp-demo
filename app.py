@@ -305,6 +305,7 @@ def make_app(build_dir: str,
 
         # The model predictions are extremely verbose, so we only log the most human-readable
         # parts of them.
+        print("app.py",prediction)
         if "comprehension" in model_name:
             if 'best_span_str' in prediction:
                 answer = prediction['best_span_str']
@@ -315,7 +316,7 @@ def make_app(build_dir: str,
             log_blob["outputs"]["clusters"] = prediction["clusters"]
             log_blob["outputs"]["document"] = prediction["document"]
         elif model_name == "textual-entailment":
-            log_blob["outputs"]["label_probs"] = prediction["label_probs"]
+            log_blob["outputs"]["label_probs"] = prediction["probs"]
         elif model_name == "sentiment-analysis":
             log_blob["outputs"]["probs"] = prediction["probs"]
         elif model_name == "named-entity-recognition":

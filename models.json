@@ -27,7 +27,7 @@
         "max_request_length": 19681
     },
     "textual-entailment": {
-        "archive_file": "https://storage.googleapis.com/allennlp-public-models/decomposable-attention-elmo-2020.02.10.tar.gz",
+        "archive_file": "/home/junliw/gradient-regularization/SNLI/archives/bert_models/combined_model.tar.gz",
         "predictor_name": "textual-entailment",
         "max_request_length": 13129
     },
@@ -87,12 +87,12 @@
         "image": "gcr.io/ai2-reviz/allennlp-demo:584070b73f7eb6eb1f82af723295aec0a44ae3a9"
     },
     "glove-sentiment-analysis": {
-        "archive_file": "https://s3-us-west-2.amazonaws.com/allennlp/models/sst-2-basic-classifier-glove-2019.06.27.tar.gz",
+        "archive_file": "/home/junliw/gradient-regularization/two-model-sst-experiment/archives/bert_models/combined_model.tar.gz",
         "predictor_name": "text_classifier",
         "max_request_length": 1000
     },
     "roberta-sentiment-analysis": {
-        "archive_file": "https://storage.googleapis.com/allennlp-public-models/sst-roberta-large-2020.02.17.tar.gz",
+        "archive_file": "/home/junliw/gradient-regularization/two-model-sst-experiment/archives/bert_models/combined_model2.tar.gz",
         "predictor_name": "text_classifier",
         "max_request_length": 1000,
         "memory": "4Gi"

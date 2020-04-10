@@ -98,7 +98,8 @@ const judgments = {
 
 const getGradData = ({ grad_input_1, grad_input_2 }) => {
   // Not sure why, but it appears that the order of the gradients is reversed for these.
-  return [grad_input_2, grad_input_1];
+  // return [grad_input_2, grad_input_1];
+  return [grad_input_1];
 }
 
 const MySaliencyMaps = ({interpretData, premise_tokens, hypothesis_tokens, interpretModel, requestData}) => {
@@ -110,7 +111,8 @@ const MySaliencyMaps = ({interpretData, premise_tokens, hypothesis_tokens, inter
     integratedGradData = IG_INTERPRETER in interpretData ? getGradData(interpretData[IG_INTERPRETER]['instance_1']) : undefined
     smoothGradData = SG_INTERPRETER in interpretData ? getGradData(interpretData[SG_INTERPRETER]['instance_1']) : undefined
   }
-  const inputTokens = [premise_tokens, hypothesis_tokens];
+  // const inputTokens = [premise_tokens, hypothesis_tokens];
+  const inputTokens = [premise_tokens.concat(hypothesis_tokens)];
   const inputHeaders = [<p><strong>Premise:</strong></p>, <p><strong>Hypothesis:</strong></p>];
   const allInterpretData = {simple: simpleGradData, ig: integratedGradData, sg: smoothGradData};
   return <SaliencyMaps interpretData={allInterpretData} inputTokens={inputTokens} inputHeaders={inputHeaders} interpretModel={interpretModel} requestData={requestData} />
@@ -165,10 +167,19 @@ const Attacks = ({attackData, attackModel, requestData}) => {
 }
 
 
-const Output = ({ responseData, requestData, interpretData, interpretModel, attackData, attackModel}) => {
-  const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
-  const [entailment, contradiction, neutral] = label_probs
-
+const Output = ({responseData, requestData, interpretData, interpretModel, attackData, attackModel}) => {
+  // const { label_probs, h2p_attention, p2h_attention, premise_tokens, hypothesis_tokens } = responseData
+  const { logits, probs, token_ids, tokens  } = responseData;
+  let label_probs = probs;
+  const [entailment, contradiction, neutral] = label_probs;
+  console.log("----");
+  console.log(responseData["tokens"]);
+  let i = tokens.indexOf("[SEP]");
+  const length = tokens.length;
+  var premise_tokens = tokens.slice(0,i);
+  var hypothesis_tokens = tokens.slice(i,length);
+  console.log(premise_tokens);
+  console.log(hypothesis_tokens);
   // Find judgment and confidence.
   let judgment
   let confidence
@@ -259,7 +270,7 @@ const Output = ({ responseData, requestData, interpretData, interpretModel, atta
         <MySaliencyMaps interpretData={interpretData} premise_tokens={premise_tokens} hypothesis_tokens={hypothesis_tokens} interpretModel={interpretModel} requestData={requestData} />
         <Attacks attackData={attackData} attackModel={attackModel} requestData={requestData}/>
 
-        <AccordionItem>
+        {/* <AccordionItem>
           <AccordionItemTitle>
             Premise to Hypothesis Attention
             <div className="accordion__arrow" role="presentation"/>
@@ -271,8 +282,8 @@ const Output = ({ responseData, requestData, interpretData, interpretModel, atta
             </p>
             <HeatMap colLabels={premise_tokens} rowLabels={hypothesis_tokens} data={h2p_attention} />
           </AccordionItemBody>
-        </AccordionItem>
-        <AccordionItem>
+        </AccordionItem> */}
+        {/* <AccordionItem>
           <AccordionItemTitle>
             Hypothesis to Premise Attention
             <div className="accordion__arrow" role="presentation"/>
@@ -284,7 +295,7 @@ const Output = ({ responseData, requestData, interpretData, interpretModel, atta
             </p>
             <HeatMap colLabels={hypothesis_tokens} rowLabels={premise_tokens} data={p2h_attention} />
           </AccordionItemBody>
-        </AccordionItem>
+        </AccordionItem> */}
       </Accordion>
     </OutputField>
   </div>

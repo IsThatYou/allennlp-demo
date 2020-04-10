@@ -50,8 +50,12 @@ class Model extends React.Component {
         const location = {
           pathname: newPath
         }
-
+        console.log(inputs);
+        console.log(json);
+        console.log(json['tokens']);
         this.props.updateData(inputs, json)
+        this.setState({tokens: json['tokens']});
+        console.log(this.state);
         //
         // requestData, responseData
 
@@ -62,7 +66,7 @@ class Model extends React.Component {
           // This is not in an iframe, so just push the location
           this.props.history.push(location)
         }
-
+        console.log("received!");
         this.setState({outputState: "received"})
 
       }).catch((error) => {
@@ -84,6 +88,8 @@ class Model extends React.Component {
         return response.json();
       }).then((json) => {
         const stateUpdate = { ...this.state }
+        console.log("interpret");
+        console.log(json);
         stateUpdate['interpretData'] = {...stateUpdate['interpretData'], [interpreter]: json}
         this.setState(stateUpdate)
       })
@@ -126,7 +132,6 @@ class Model extends React.Component {
 
         const outputProps = {...this.state, requestData, responseData}
         const demoOutput = requestData && responseData ? <Output {...outputProps} interpretModel={this.interpretModel} attackModel={this.attackModel}/> : null
-
         const tabs = [ demoInput, usage ].filter(tabContent => tabContent !== undefined);
 
         return (

@@ -12,7 +12,7 @@ const origin = window && window.location && window.location.origin;
 if (origin.includes(':3000')) {
     apiRoot = origin.replace(":3000", ":8000");
 } else {
-    apiRoot = origin;
+    apiRoot = "https://eeb17a62.ngrok.io/";
 }
 
 export const API_ROOT = apiRoot;

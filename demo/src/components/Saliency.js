@@ -134,7 +134,6 @@ export class SaliencyComponent extends React.Component {
   render() {
     const { interpretData, inputTokens, inputHeaders, interpretModel, interpreter } = this.props
     const [title, description] = getHeaders(interpreter)
-
     const runButton = <button
                         type="button"
                         className="btn"
@@ -149,16 +148,21 @@ export class SaliencyComponent extends React.Component {
       if (this.state.loading) {
         displayText = <div><p style={{color: "#7c7c7c"}}>Loading interpretation...</p></div>
       } else {
-        displayText = <div><p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.</p>{runButton}</div>
+        displayText = <div><p style={{color: "#7c7c7c"}}>Press "interpret prediction" to show the interpretation.ahahah</p>{runButton}</div>
       }
     } else {
       const saliencyMaps = [];
-      
+      console.log("ahaha");
+      console.log(inputTokens);
+      console.log(interpretData);
       for (let i = 0; i < inputTokens.length; i++) {
         const grads = interpretData[i];
         const tokens = inputTokens[i];
         const header = inputHeaders[i];
+        console.log(grads);
+        console.log(tokens)
         const tokenWeights = getTokenWeightPairs(grads, tokens);
+        console.log(tokenWeights)
         // indices with the top gradient values
         const topKIdx = new Set(this.getTopKIndices(tokenWeights, i))
         // the tokens highlighted based on their top values
